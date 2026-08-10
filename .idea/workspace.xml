@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="62127764-e00e-454b-ae32-94c42b3932c5" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/data-agent.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/es/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/es/value_info_es.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/mysql/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/mysql/base.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/mysql/column_info_mysql.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/mysql/column_metric_mysql.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/mysql/metric_info_mysql.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/mysql/table_info_mysql.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/qdrant/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/qdrant/column_info_qdrant.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/conf/app_config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/conf/meta_config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/conf/text_config.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/docker-compose.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/elasticsearch/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/elasticsearch/plugins/elasticsearch-analysis-ik-8.19.10.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/1_Pooling/config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/config_sentence_transformers.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/modules.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/pytorch_model.bin" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/sentence_bert_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/special_tokens_map.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/tokenizer.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/tokenizer_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/embedding/bge-large-zh-v1.5/vocab.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/mysql/dw.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker/mysql/meta.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/.venv/Lib/site-packages/omegaconf/omegaconf.py" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="3HQn7kkRzyw4sE9GvrRXid5KTS8" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.app_config.executor": "Run",
+    "Python.build_meta_knowledge.executor": "Debug",
+    "Python.column_info_mysql.executor": "Debug",
+    "Python.column_info_qdrant.executor": "Debug",
+    "Python.column_qdrant_repository.executor": "Run",
+    "Python.context.executor": "Run",
+    "Python.dw_mysql_repository.executor": "Run",
+    "Python.embedding_client_manager.executor": "Run",
+    "Python.es_client_manager (1).executor": "Run",
+    "Python.es_client_manager.p.executor": "Run",
+    "Python.log.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.meta_config.executor": "Run",
+    "Python.meta_knowledge_service (1).executor": "Run",
+    "Python.meta_knowledge_service.executor": "Run",
+    "Python.meta_mysql_repository (1).executor": "Run",
+    "Python.meta_mysql_repository.executor": "Run",
+    "Python.metric_qdrant_repository.executor": "Debug",
+    "Python.mysql_client_manager.executor": "Run",
+    "Python.mysql_client_manager_v1.executor": "Run",
+    "Python.pathlib.executor": "Run",
+    "Python.qdrant_client_manager.executor": "Debug",
+    "Python.text_config.executor": "Run",
+    "Python.value_es_repository (1).executor": "Run",
+    "Python.value_es_repository.executor": "Run",
+    "Python.value_info_es.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "D:/data-agent/app",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\data-agent\app" />
+      <recent name="D:\data-agent" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\data-agent\app\models" />
+      <recent name="D:\data-agent\app" />
+      <recent name="D:\data-agent\app\models\qdrant" />
+      <recent name="D:\data-agent\app\repositories\es" />
+      <recent name="D:\data-agent\app\repositories\mysql" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.meta_knowledge_service">
+    <configuration name="build_meta_knowledge" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="data-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/scripts/build_meta_knowledge.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="column_qdrant_repository" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="data-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/repositories/qdrant" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/repositories/qdrant/column_qdrant_repository.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="embedding_client_manager" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="data-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/clients" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/clients/embedding_client_manager.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="meta_knowledge_service" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="data-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/services" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/services/meta_knowledge_service.py" />
+      <option name="PARAMETERS" value="-c D:\data-agent\conf\meta_config.yaml" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="meta_mysql_repository" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="data-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/services" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="D:\data-agent\app\repositories\mysql\meta_mysql_repository.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="value_es_repository" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="data-agent" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/app/repositories/es" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/app/repositories/es/value_es_repository.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.column_qdrant_repository" />
+      <item itemvalue="Python.embedding_client_manager" />
+      <item itemvalue="Python.value_es_repository" />
+      <item itemvalue="Python.build_meta_knowledge" />
+      <item itemvalue="Python.meta_knowledge_service" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.meta_knowledge_service" />
+        <item itemvalue="Python.build_meta_knowledge" />
+        <item itemvalue="Python.column_qdrant_repository" />
+        <item itemvalue="Python.embedding_client_manager" />
+        <item itemvalue="Python.value_es_repository" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-PY-243.26574.109" />
+        <option value="bundled-python-sdk-63635adfcd5c-4df51de95216-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.26574.109" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="62127764-e00e-454b-ae32-94c42b3932c5" name="更改" comment="" />
+      <created>1785808994846</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1785808994846</updated>
+      <workItem from="1785808996067" duration="2404000" />
+      <workItem from="1785811465194" duration="11279000" />
+      <workItem from="1785834197374" duration="94000" />
+      <workItem from="1785834313719" duration="615000" />
+      <workItem from="1785845315542" duration="18029000" />
+      <workItem from="1785919377259" duration="828000" />
+      <workItem from="1785920460692" duration="2389000" />
+      <workItem from="1785973875870" duration="36187000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/services/meta_knowledge_service.py</url>
+          <line>124</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/services/meta_knowledge_service.py</url>
+          <line>121</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/services/meta_knowledge_service.py</url>
+          <line>138</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/services/meta_knowledge_service.py</url>
+          <line>144</line>
+          <option name="timeStamp" value="30" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/services/meta_knowledge_service.py</url>
+          <line>118</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/services/meta_knowledge_service.py</url>
+          <line>141</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/models/mysql/column_info_mysql.py</url>
+          <line>7</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/app/services/meta_knowledge_service.py</url>
+          <line>52</line>
+          <option name="timeStamp" value="39" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/data_agent$mysql_client_manager_v1.coverage" NAME="mysql_client_manager_v1 覆盖结果" MODIFIED="1785920854323" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/clients" />
+    <SUITE FILE_PATH="coverage/data_agent$context.coverage" NAME="context 覆盖结果" MODIFIED="1785917510157" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/core" />
+    <SUITE FILE_PATH="coverage/data_agent$mysql_client_manager.coverage" NAME="mysql_client_manager 覆盖结果" MODIFIED="1785920889894" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/clients" />
+    <SUITE FILE_PATH="coverage/data_agent$log.coverage" NAME="log 覆盖结果" MODIFIED="1785921452345" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/core" />
+    <SUITE FILE_PATH="coverage/data_agent$meta_knowledge_service.coverage" NAME="meta_knowledge_service 覆盖结果" MODIFIED="1786087881009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/services" />
+    <SUITE FILE_PATH="coverage/data_agent$meta_mysql_repository.coverage" NAME="meta_mysql_repository 覆盖结果" MODIFIED="1786069443581" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/repositories/mysql" />
+    <SUITE FILE_PATH="coverage/data_agent$metric_qdrant_repository.coverage" NAME="metric_qdrant_repository 覆盖结果" MODIFIED="1786073848764" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/repositories/qdrant" />
+    <SUITE FILE_PATH="coverage/data_agent$column_info_qdrant.coverage" NAME="column_info_qdrant 覆盖结果" MODIFIED="1786074340889" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/models/qdrant" />
+    <SUITE FILE_PATH="coverage/data_agent$main.coverage" NAME="main 覆盖结果" MODIFIED="1785809015207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/data_agent$dw_mysql_repository.coverage" NAME="dw_mysql_repository 覆盖结果" MODIFIED="1786004854127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/repositories/mysql" />
+    <SUITE FILE_PATH="coverage/data_agent$meta_config.coverage" NAME="meta_config 覆盖结果" MODIFIED="1785980930736" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/conf" />
+    <SUITE FILE_PATH="coverage/data_agent$embedding_client_manager.coverage" NAME="embedding_client_manager 覆盖结果" MODIFIED="1786087441708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/clients" />
+    <SUITE FILE_PATH="coverage/data_agent$value_info_es.coverage" NAME="value_info_es 覆盖结果" MODIFIED="1786069640557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/models/es" />
+    <SUITE FILE_PATH="coverage/data_agent$app_config.coverage" NAME="app_config 覆盖结果" MODIFIED="1785920859978" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/conf" />
+    <SUITE FILE_PATH="coverage/data_agent$meta_knowledge_service__1_.coverage" NAME="meta_knowledge_service (1) 覆盖结果" MODIFIED="1786004845087" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/services" />
+    <SUITE FILE_PATH="coverage/data_agent$pathlib.coverage" NAME="pathlib 覆盖结果" MODIFIED="1786073875744" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/AppData/Local/Programs/Python/Python311/Lib" />
+    <SUITE FILE_PATH="coverage/data_agent$text_config.coverage" NAME="text_config 覆盖结果" MODIFIED="1785920864174" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/conf" />
+    <SUITE FILE_PATH="coverage/data_agent$qdrant_client_manager.coverage" NAME="qdrant_client_manager 覆盖结果" MODIFIED="1785901554694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/clients" />
+    <SUITE FILE_PATH="coverage/data_agent$column_qdrant_repository.coverage" NAME="column_qdrant_repository 覆盖结果" MODIFIED="1786087837845" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/repositories/qdrant" />
+    <SUITE FILE_PATH="coverage/data_agent$value_es_repository__1_.coverage" NAME="value_es_repository (1) 覆盖结果" MODIFIED="1786069644072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/models/es" />
+    <SUITE FILE_PATH="coverage/data_agent$column_info_mysql.coverage" NAME="column_info_mysql 覆盖结果" MODIFIED="1786074320011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/models/mysql" />
+    <SUITE FILE_PATH="coverage/data_agent$es_client_manager_p.coverage" NAME="es_client_manager 覆盖结果" MODIFIED="1785912031684" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/clients" />
+    <SUITE FILE_PATH="coverage/data_agent$build_meta_knowledge.coverage" NAME="build_meta_knowledge 覆盖结果" MODIFIED="1786087846596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/scripts" />
+    <SUITE FILE_PATH="coverage/data_agent$meta_mysql_repository__1_.coverage" NAME="meta_mysql_repository (1) 覆盖结果" MODIFIED="1786071620187" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/repositories/mysql" />
+    <SUITE FILE_PATH="coverage/data_agent$value_es_repository.coverage" NAME="value_es_repository 覆盖结果" MODIFIED="1786083575226" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/repositories/es" />
+    <SUITE FILE_PATH="coverage/data_agent$es_client_manager__1_.coverage" NAME="es_client_manager (1) 覆盖结果" MODIFIED="1785920899218" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app/clients" />
+  </component>
+</project>
