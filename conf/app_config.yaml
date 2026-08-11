@@ -41,5 +41,6 @@ es:
 
 
 llm:
-  model_name: deepseek-chat
-  api_key: <deepseek_api_key>
+  model_name: deepseek-v4-flash-202605
+  api_key: sk-tp-C9D14hIN6PAG5zAeGzQamU8IbNuZSjKqHnj4t9RgIHQ1GKo9
+  base_url: https://api.lkeap.cloud.tencent.com/plan/v3
