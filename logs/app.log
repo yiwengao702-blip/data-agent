@@ -1,0 +1,237 @@
+2026-08-05 17:15:05.013 | INFO     | request_id - 111111111 | __main__:graph:65 - 111111111
+2026-08-05 17:15:05.031 | INFO     | request_id - 2222222222 | __main__:graph:65 - 2222222222
+2026-08-05 17:17:34.088 | INFO     | request_id - 111111111 | __main__:graph:65 - 111111111
+2026-08-05 17:17:34.088 | INFO     | request_id - 2222222222 | __main__:graph:65 - 2222222222
+2026-08-06 08:39:17.849 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 08:40:05.214 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 08:42:15.736 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 08:42:31.232 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 08:43:32.829 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 09:02:25.185 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 09:15:43.749 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 10:16:51.008 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 10:21:45.948 | INFO     | request_id - 1 | __main__:<module>:18 - ['D:\\data-agent\\app\\scripts\\build_meta_knowledge.py', '-c', '.\\conf\\meta_config.yaml']
+2026-08-06 10:21:45.949 | INFO     | request_id - 1 | __main__:build:13 - Building meta knowledge...
+2026-08-06 10:23:33.524 | INFO     | request_id - 1 | __main__:<module>:18 - ['D:\\data-agent\\app\\scripts\\build_meta_knowledge.py', '-c', '.\\conf\\meta_config.yaml']
+2026-08-06 10:23:33.526 | INFO     | request_id - 1 | __main__:build:13 - Building meta knowledge...
+2026-08-06 10:27:58.054 | INFO     | request_id - 1 | __main__:<module>:19 - .\conf\meta_config.yaml
+2026-08-06 10:27:58.055 | INFO     | request_id - 1 | __main__:build:13 - Building meta knowledge...
+2026-08-06 10:32:54.404 | INFO     | request_id - 1 | __main__:build:16 - Building meta knowledge...
+2026-08-06 10:39:34.271 | INFO     | request_id - 1 | __main__:build:16 - Building meta knowledge...
+2026-08-06 10:41:07.985 | INFO     | request_id - 1 | __main__:build:16 - Building meta knowledge...
+2026-08-06 10:44:48.497 | INFO     | request_id - 1 | __main__:build:12 - Building meta knowledge...
+2026-08-06 10:47:21.878 | INFO     | request_id - 1 | __main__:build:12 - 接受到: conf\meta_config.yaml
+2026-08-06 11:03:43.425 | INFO     | request_id - 1 | __main__:build:12 - 接受到: conf\meta_config.yaml
+2026-08-06 15:56:59.270 | INFO     | request_id - 1 | __main__:build:12 - 接受到: abc
+2026-08-06 16:21:51.312 | INFO     | request_id - 1 | __main__:<module>:1 - log module OK
+2026-08-06 16:26:39.201 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:33 - 保存表信息到meta数据库
+2026-08-06 16:55:23.793 | INFO     | request_id - 1 | __main__:<module>:53 - 配置文件路径: D:\data-agent\conf\meta_config.yaml
+2026-08-06 16:55:24.068 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:31 - 已加载元数据配置: MetaConfig(tables=[TableConfig(name='dim_region', role='dim', description='地区维度表，用于描述订单发生的地理区域信息。', columns=[ColumnConfig(name='region_id', role='primary_key', description='地区唯一标识。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='province', role='dimension', description='订单所属的省份名称。', alias=['省份', '省', '所在省份'], sync=True), ColumnConfig(name='region_name', role='dimension', description='订单所属的大区名称，如华东、华南等。', alias=['地区', '区域', '大区'], sync=True), ColumnConfig(name='country', role='dimension', description='地区所属国家名称。', alias=['国家', '国', '国家名称'], sync=True)]), TableConfig(name='dim_customer', role='dim', description='客户维度表，描述下单客户的基本属性。', columns=[ColumnConfig(name='customer_id', role='primary_key', description='客户唯一标识。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='customer_name', role='dimension', description='客户名称。', alias=['客户名称', '用户名称'], sync=True), ColumnConfig(name='gender', role='dimension', description='客户性别。', alias=['性别'], sync=True), ColumnConfig(name='member_level', role='dimension', description='客户会员等级。', alias=['会员等级', '用户等级'], sync=True)]), TableConfig(name='dim_product', role='dim', description='商品维度表，描述商品的基本属性信息。', columns=[ColumnConfig(name='product_id', role='primary_key', description='商品唯一标识。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='product_name', role='dimension', description='商品名称。', alias=['商品名称', '产品名称'], sync=True), ColumnConfig(name='category', role='dimension', description='商品所属品类。', alias=['商品类别', '品类', '分类'], sync=True), ColumnConfig(name='brand', role='dimension', description='商品品牌名称。', alias=['品牌', '品牌名称'], sync=True)]), TableConfig(name='dim_date', role='dim', description='时间维度表，用于多时间粒度分析。', columns=[ColumnConfig(name='date_id', role='primary_key', description='日期唯一标识，格式 yyyyMMdd。', alias=['日期ID', '日期'], sync=False), ColumnConfig(name='year', role='dimension', description='年份。', alias=['年', '年份'], sync=False), ColumnConfig(name='quarter', role='dimension', description='季度。', alias=['季度'], sync=True), ColumnConfig(name='month', role='dimension', description='月份。', alias=['月', '月份'], sync=False), ColumnConfig(name='day', role='dimension', description='日。', alias=['日', '天'], sync=False)]), TableConfig(name='fact_order', role='fact', description='订单事实表，记录订单数量和金额等核心指标。', columns=[ColumnConfig(name='order_id', role='primary_key', description='订单唯一标识。', alias=['订单ID'], sync=False), ColumnConfig(name='customer_id', role='foreign_key', description='关联客户维度的外键。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='product_id', role='foreign_key', description='关联商品维度的外键。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='date_id', role='foreign_key', description='关联时间维度的外键。', alias=['日期', '下单日期'], sync=False), ColumnConfig(name='region_id', role='foreign_key', description='关联地区维度的外键。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='order_quantity', role='measure', description='订单中商品的购买数量。', alias=['销量', '购买数量', '件数'], sync=False), ColumnConfig(name='order_amount', role='measure', description='订单金额。', alias=['销售额', '订单金额', '收入'], sync=False)])], metrics=[MetricConfig(name='GMV', description='全称Gross Merchandise Value，表示所有订单的成交金额总和。', relevant_columns=['fact_order.order_amount'], alias=['成交总额', '订单总额']), MetricConfig(name='AOV', description='全称Average Order Value，表示所有订单的成交金额平均值。', relevant_columns=['fact_order.order_quantity'], alias=['平均单价', '平均订单金额'])])
+2026-08-06 16:55:24.287 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:37 - 保存表信息到meta数据库完成，共 24 个字段
+2026-08-06 16:55:24.302 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:42 - 保存指标信息到meta数据库完成，共 2 个指标
+2026-08-06 17:10:13.599 | INFO     | request_id - 1 | __main__:<module>:53 - 配置文件路径: D:\data-agent\conf\meta_config.yaml
+2026-08-06 17:10:13.841 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:31 - 已加载元数据配置: MetaConfig(tables=[TableConfig(name='dim_region', role='dim', description='地区维度表，用于描述订单发生的地理区域信息。', columns=[ColumnConfig(name='region_id', role='primary_key', description='地区唯一标识。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='province', role='dimension', description='订单所属的省份名称。', alias=['省份', '省', '所在省份'], sync=True), ColumnConfig(name='region_name', role='dimension', description='订单所属的大区名称，如华东、华南等。', alias=['地区', '区域', '大区'], sync=True), ColumnConfig(name='country', role='dimension', description='地区所属国家名称。', alias=['国家', '国', '国家名称'], sync=True)]), TableConfig(name='dim_customer', role='dim', description='客户维度表，描述下单客户的基本属性。', columns=[ColumnConfig(name='customer_id', role='primary_key', description='客户唯一标识。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='customer_name', role='dimension', description='客户名称。', alias=['客户名称', '用户名称'], sync=True), ColumnConfig(name='gender', role='dimension', description='客户性别。', alias=['性别'], sync=True), ColumnConfig(name='member_level', role='dimension', description='客户会员等级。', alias=['会员等级', '用户等级'], sync=True)]), TableConfig(name='dim_product', role='dim', description='商品维度表，描述商品的基本属性信息。', columns=[ColumnConfig(name='product_id', role='primary_key', description='商品唯一标识。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='product_name', role='dimension', description='商品名称。', alias=['商品名称', '产品名称'], sync=True), ColumnConfig(name='category', role='dimension', description='商品所属品类。', alias=['商品类别', '品类', '分类'], sync=True), ColumnConfig(name='brand', role='dimension', description='商品品牌名称。', alias=['品牌', '品牌名称'], sync=True)]), TableConfig(name='dim_date', role='dim', description='时间维度表，用于多时间粒度分析。', columns=[ColumnConfig(name='date_id', role='primary_key', description='日期唯一标识，格式 yyyyMMdd。', alias=['日期ID', '日期'], sync=False), ColumnConfig(name='year', role='dimension', description='年份。', alias=['年', '年份'], sync=False), ColumnConfig(name='quarter', role='dimension', description='季度。', alias=['季度'], sync=True), ColumnConfig(name='month', role='dimension', description='月份。', alias=['月', '月份'], sync=False), ColumnConfig(name='day', role='dimension', description='日。', alias=['日', '天'], sync=False)]), TableConfig(name='fact_order', role='fact', description='订单事实表，记录订单数量和金额等核心指标。', columns=[ColumnConfig(name='order_id', role='primary_key', description='订单唯一标识。', alias=['订单ID'], sync=False), ColumnConfig(name='customer_id', role='foreign_key', description='关联客户维度的外键。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='product_id', role='foreign_key', description='关联商品维度的外键。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='date_id', role='foreign_key', description='关联时间维度的外键。', alias=['日期', '下单日期'], sync=False), ColumnConfig(name='region_id', role='foreign_key', description='关联地区维度的外键。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='order_quantity', role='measure', description='订单中商品的购买数量。', alias=['销量', '购买数量', '件数'], sync=False), ColumnConfig(name='order_amount', role='measure', description='订单金额。', alias=['销售额', '订单金额', '收入'], sync=False)])], metrics=[MetricConfig(name='GMV', description='全称Gross Merchandise Value，表示所有订单的成交金额总和。', relevant_columns=['fact_order.order_amount'], alias=['成交总额', '订单总额']), MetricConfig(name='AOV', description='全称Average Order Value，表示所有订单的成交金额平均值。', relevant_columns=['fact_order.order_quantity'], alias=['平均单价', '平均订单金额'])])
+2026-08-06 17:10:19.907 | INFO     | request_id - 1 | __main__:<module>:53 - 配置文件路径: D:\data-agent\conf\meta_config.yaml
+2026-08-06 17:10:20.097 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:31 - 已加载元数据配置: MetaConfig(tables=[TableConfig(name='dim_region', role='dim', description='地区维度表，用于描述订单发生的地理区域信息。', columns=[ColumnConfig(name='region_id', role='primary_key', description='地区唯一标识。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='province', role='dimension', description='订单所属的省份名称。', alias=['省份', '省', '所在省份'], sync=True), ColumnConfig(name='region_name', role='dimension', description='订单所属的大区名称，如华东、华南等。', alias=['地区', '区域', '大区'], sync=True), ColumnConfig(name='country', role='dimension', description='地区所属国家名称。', alias=['国家', '国', '国家名称'], sync=True)]), TableConfig(name='dim_customer', role='dim', description='客户维度表，描述下单客户的基本属性。', columns=[ColumnConfig(name='customer_id', role='primary_key', description='客户唯一标识。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='customer_name', role='dimension', description='客户名称。', alias=['客户名称', '用户名称'], sync=True), ColumnConfig(name='gender', role='dimension', description='客户性别。', alias=['性别'], sync=True), ColumnConfig(name='member_level', role='dimension', description='客户会员等级。', alias=['会员等级', '用户等级'], sync=True)]), TableConfig(name='dim_product', role='dim', description='商品维度表，描述商品的基本属性信息。', columns=[ColumnConfig(name='product_id', role='primary_key', description='商品唯一标识。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='product_name', role='dimension', description='商品名称。', alias=['商品名称', '产品名称'], sync=True), ColumnConfig(name='category', role='dimension', description='商品所属品类。', alias=['商品类别', '品类', '分类'], sync=True), ColumnConfig(name='brand', role='dimension', description='商品品牌名称。', alias=['品牌', '品牌名称'], sync=True)]), TableConfig(name='dim_date', role='dim', description='时间维度表，用于多时间粒度分析。', columns=[ColumnConfig(name='date_id', role='primary_key', description='日期唯一标识，格式 yyyyMMdd。', alias=['日期ID', '日期'], sync=False), ColumnConfig(name='year', role='dimension', description='年份。', alias=['年', '年份'], sync=False), ColumnConfig(name='quarter', role='dimension', description='季度。', alias=['季度'], sync=True), ColumnConfig(name='month', role='dimension', description='月份。', alias=['月', '月份'], sync=False), ColumnConfig(name='day', role='dimension', description='日。', alias=['日', '天'], sync=False)]), TableConfig(name='fact_order', role='fact', description='订单事实表，记录订单数量和金额等核心指标。', columns=[ColumnConfig(name='order_id', role='primary_key', description='订单唯一标识。', alias=['订单ID'], sync=False), ColumnConfig(name='customer_id', role='foreign_key', description='关联客户维度的外键。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='product_id', role='foreign_key', description='关联商品维度的外键。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='date_id', role='foreign_key', description='关联时间维度的外键。', alias=['日期', '下单日期'], sync=False), ColumnConfig(name='region_id', role='foreign_key', description='关联地区维度的外键。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='order_quantity', role='measure', description='订单中商品的购买数量。', alias=['销量', '购买数量', '件数'], sync=False), ColumnConfig(name='order_amount', role='measure', description='订单金额。', alias=['销售额', '订单金额', '收入'], sync=False)])], metrics=[MetricConfig(name='GMV', description='全称Gross Merchandise Value，表示所有订单的成交金额总和。', relevant_columns=['fact_order.order_amount'], alias=['成交总额', '订单总额']), MetricConfig(name='AOV', description='全称Average Order Value，表示所有订单的成交金额平均值。', relevant_columns=['fact_order.order_quantity'], alias=['平均单价', '平均订单金额'])])
+2026-08-06 17:10:28.145 | INFO     | request_id - 1 | __main__:<module>:53 - 配置文件路径: D:\data-agent\conf\meta_config.yaml
+2026-08-06 17:10:28.332 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:31 - 已加载元数据配置: MetaConfig(tables=[TableConfig(name='dim_region', role='dim', description='地区维度表，用于描述订单发生的地理区域信息。', columns=[ColumnConfig(name='region_id', role='primary_key', description='地区唯一标识。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='province', role='dimension', description='订单所属的省份名称。', alias=['省份', '省', '所在省份'], sync=True), ColumnConfig(name='region_name', role='dimension', description='订单所属的大区名称，如华东、华南等。', alias=['地区', '区域', '大区'], sync=True), ColumnConfig(name='country', role='dimension', description='地区所属国家名称。', alias=['国家', '国', '国家名称'], sync=True)]), TableConfig(name='dim_customer', role='dim', description='客户维度表，描述下单客户的基本属性。', columns=[ColumnConfig(name='customer_id', role='primary_key', description='客户唯一标识。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='customer_name', role='dimension', description='客户名称。', alias=['客户名称', '用户名称'], sync=True), ColumnConfig(name='gender', role='dimension', description='客户性别。', alias=['性别'], sync=True), ColumnConfig(name='member_level', role='dimension', description='客户会员等级。', alias=['会员等级', '用户等级'], sync=True)]), TableConfig(name='dim_product', role='dim', description='商品维度表，描述商品的基本属性信息。', columns=[ColumnConfig(name='product_id', role='primary_key', description='商品唯一标识。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='product_name', role='dimension', description='商品名称。', alias=['商品名称', '产品名称'], sync=True), ColumnConfig(name='category', role='dimension', description='商品所属品类。', alias=['商品类别', '品类', '分类'], sync=True), ColumnConfig(name='brand', role='dimension', description='商品品牌名称。', alias=['品牌', '品牌名称'], sync=True)]), TableConfig(name='dim_date', role='dim', description='时间维度表，用于多时间粒度分析。', columns=[ColumnConfig(name='date_id', role='primary_key', description='日期唯一标识，格式 yyyyMMdd。', alias=['日期ID', '日期'], sync=False), ColumnConfig(name='year', role='dimension', description='年份。', alias=['年', '年份'], sync=False), ColumnConfig(name='quarter', role='dimension', description='季度。', alias=['季度'], sync=True), ColumnConfig(name='month', role='dimension', description='月份。', alias=['月', '月份'], sync=False), ColumnConfig(name='day', role='dimension', description='日。', alias=['日', '天'], sync=False)]), TableConfig(name='fact_order', role='fact', description='订单事实表，记录订单数量和金额等核心指标。', columns=[ColumnConfig(name='order_id', role='primary_key', description='订单唯一标识。', alias=['订单ID'], sync=False), ColumnConfig(name='customer_id', role='foreign_key', description='关联客户维度的外键。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='product_id', role='foreign_key', description='关联商品维度的外键。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='date_id', role='foreign_key', description='关联时间维度的外键。', alias=['日期', '下单日期'], sync=False), ColumnConfig(name='region_id', role='foreign_key', description='关联地区维度的外键。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='order_quantity', role='measure', description='订单中商品的购买数量。', alias=['销量', '购买数量', '件数'], sync=False), ColumnConfig(name='order_amount', role='measure', description='订单金额。', alias=['销售额', '订单金额', '收入'], sync=False)])], metrics=[MetricConfig(name='GMV', description='全称Gross Merchandise Value，表示所有订单的成交金额总和。', relevant_columns=['fact_order.order_amount'], alias=['成交总额', '订单总额']), MetricConfig(name='AOV', description='全称Average Order Value，表示所有订单的成交金额平均值。', relevant_columns=['fact_order.order_quantity'], alias=['平均单价', '平均订单金额'])])
+2026-08-06 17:10:43.885 | INFO     | request_id - 1 | __main__:<module>:53 - 配置文件路径: abc
+2026-08-06 17:10:51.529 | INFO     | request_id - 1 | __main__:<module>:53 - 配置文件路径: D:\data-agent\conf\meta_config.yaml
+2026-08-06 17:10:51.714 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:31 - 已加载元数据配置: MetaConfig(tables=[TableConfig(name='dim_region', role='dim', description='地区维度表，用于描述订单发生的地理区域信息。', columns=[ColumnConfig(name='region_id', role='primary_key', description='地区唯一标识。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='province', role='dimension', description='订单所属的省份名称。', alias=['省份', '省', '所在省份'], sync=True), ColumnConfig(name='region_name', role='dimension', description='订单所属的大区名称，如华东、华南等。', alias=['地区', '区域', '大区'], sync=True), ColumnConfig(name='country', role='dimension', description='地区所属国家名称。', alias=['国家', '国', '国家名称'], sync=True)]), TableConfig(name='dim_customer', role='dim', description='客户维度表，描述下单客户的基本属性。', columns=[ColumnConfig(name='customer_id', role='primary_key', description='客户唯一标识。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='customer_name', role='dimension', description='客户名称。', alias=['客户名称', '用户名称'], sync=True), ColumnConfig(name='gender', role='dimension', description='客户性别。', alias=['性别'], sync=True), ColumnConfig(name='member_level', role='dimension', description='客户会员等级。', alias=['会员等级', '用户等级'], sync=True)]), TableConfig(name='dim_product', role='dim', description='商品维度表，描述商品的基本属性信息。', columns=[ColumnConfig(name='product_id', role='primary_key', description='商品唯一标识。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='product_name', role='dimension', description='商品名称。', alias=['商品名称', '产品名称'], sync=True), ColumnConfig(name='category', role='dimension', description='商品所属品类。', alias=['商品类别', '品类', '分类'], sync=True), ColumnConfig(name='brand', role='dimension', description='商品品牌名称。', alias=['品牌', '品牌名称'], sync=True)]), TableConfig(name='dim_date', role='dim', description='时间维度表，用于多时间粒度分析。', columns=[ColumnConfig(name='date_id', role='primary_key', description='日期唯一标识，格式 yyyyMMdd。', alias=['日期ID', '日期'], sync=False), ColumnConfig(name='year', role='dimension', description='年份。', alias=['年', '年份'], sync=False), ColumnConfig(name='quarter', role='dimension', description='季度。', alias=['季度'], sync=True), ColumnConfig(name='month', role='dimension', description='月份。', alias=['月', '月份'], sync=False), ColumnConfig(name='day', role='dimension', description='日。', alias=['日', '天'], sync=False)]), TableConfig(name='fact_order', role='fact', description='订单事实表，记录订单数量和金额等核心指标。', columns=[ColumnConfig(name='order_id', role='primary_key', description='订单唯一标识。', alias=['订单ID'], sync=False), ColumnConfig(name='customer_id', role='foreign_key', description='关联客户维度的外键。', alias=['客户ID', '用户ID'], sync=False), ColumnConfig(name='product_id', role='foreign_key', description='关联商品维度的外键。', alias=['商品ID', '产品ID'], sync=False), ColumnConfig(name='date_id', role='foreign_key', description='关联时间维度的外键。', alias=['日期', '下单日期'], sync=False), ColumnConfig(name='region_id', role='foreign_key', description='关联地区维度的外键。', alias=['地区ID', '区域ID'], sync=False), ColumnConfig(name='order_quantity', role='measure', description='订单中商品的购买数量。', alias=['销量', '购买数量', '件数'], sync=False), ColumnConfig(name='order_amount', role='measure', description='订单金额。', alias=['销售额', '订单金额', '收入'], sync=False)])], metrics=[MetricConfig(name='GMV', description='全称Gross Merchandise Value，表示所有订单的成交金额总和。', relevant_columns=['fact_order.order_amount'], alias=['成交总额', '订单总额']), MetricConfig(name='AOV', description='全称Average Order Value，表示所有订单的成交金额平均值。', relevant_columns=['fact_order.order_quantity'], alias=['平均单价', '平均订单金额'])])
+2026-08-07 15:37:44.001 | INFO     | request_id - 1 | __main__:main:18 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml
+2026-08-07 15:37:46.105 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:43 - 加载完成配置内容读取
+2026-08-07 15:39:35.733 | INFO     | request_id - 1 | __main__:main:18 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml
+2026-08-07 15:39:41.681 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:43 - 加载完成配置内容读取
+2026-08-07 15:51:28.279 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:51:31.687 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:51:57.217 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:51:59.447 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:51:59.750 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 15:52:32.559 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:52:35.259 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:52:35.469 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 15:52:44.223 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:52:45.833 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:52:45.987 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 15:53:06.155 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:53:07.954 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:53:08.162 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 15:53:23.085 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:53:30.353 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:53:30.702 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 15:54:18.646 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段构建向量索引
+2026-08-07 15:54:24.022 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段构建向量索引
+2026-08-07 15:54:24.491 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段取值建立全文索引
+2026-08-07 15:54:24.495 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段取值建立全文索引
+2026-08-07 15:54:24.550 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:68 - 保存指标信息到meta数据库
+2026-08-07 15:54:27.659 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:71 - 为指标构建向量索引
+2026-08-07 15:57:14.115 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:57:17.641 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:57:18.103 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 15:57:45.265 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段构建向量索引
+2026-08-07 15:57:45.491 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段取值建立全文索引
+2026-08-07 15:57:45.508 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:68 - 保存指标信息到meta数据库
+2026-08-07 15:57:47.354 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:71 - 为指标构建向量索引
+2026-08-07 15:59:02.149 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 15:59:06.472 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 15:59:07.222 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 15:59:51.699 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段构建向量索引
+2026-08-07 15:59:52.278 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段取值建立全文索引
+2026-08-07 15:59:52.361 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:68 - 保存指标信息到meta数据库
+2026-08-07 15:59:54.858 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:71 - 为指标构建向量索引
+2026-08-07 16:18:18.486 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 16:18:20.899 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 16:19:32.429 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 16:19:35.238 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 16:19:35.675 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-07 16:24:21.090 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-07 16:24:24.688 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-07 16:25:31.812 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-10 14:30:32.986 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-10 14:30:34.875 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-10 14:30:35.295 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-10 14:31:09.507 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段构建向量索引
+2026-08-10 14:31:10.008 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段取值建立全文索引
+2026-08-10 14:31:10.050 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:68 - 保存指标信息到meta数据库
+2026-08-10 14:31:13.208 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:71 - 为指标构建向量索引
+2026-08-10 14:35:57.105 | INFO     | request_id - 1 | __main__:clear:29 - 开始清空 Qdrant 集合: data-agent-column
+2026-08-10 14:35:57.309 | INFO     | request_id - 1 | __main__:clear:32 - 已删除旧集合: data-agent-column
+2026-08-10 14:35:57.565 | INFO     | request_id - 1 | __main__:clear:34 - 已重建空集合: data-agent-column
+2026-08-10 14:35:57.565 | INFO     | request_id - 1 | __main__:clear:37 - 开始清空 Qdrant 集合: data-agent-metric
+2026-08-10 14:35:57.614 | INFO     | request_id - 1 | __main__:clear:40 - 已删除旧集合: data-agent-metric
+2026-08-10 14:35:57.803 | INFO     | request_id - 1 | __main__:clear:42 - 已重建空集合: data-agent-metric
+2026-08-10 14:35:57.803 | INFO     | request_id - 1 | __main__:clear:44 - Qdrant 集合清空完成
+2026-08-10 14:36:59.359 | INFO     | request_id - 1 | __main__:<module>:75 - 配置文件路径: conf\meta_config.yaml
+2026-08-10 14:37:01.167 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 加载完成配置内容读取
+2026-08-10 14:37:01.381 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 保存表信息到meta数据库
+2026-08-10 14:37:24.976 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段构建向量索引
+2026-08-10 14:37:25.184 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段取值建立全文索引
+2026-08-10 14:37:25.198 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:68 - 保存指标信息到meta数据库
+2026-08-10 14:37:27.365 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:71 - 为指标构建向量索引
+2026-08-10 15:41:35.898 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 15:41:36.184 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-10 15:42:07.871 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 为字段构建向量索引
+2026-08-10 15:42:07.956 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段取值建立全文索引
+2026-08-10 15:42:07.957 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:66 - 保存指标信息到meta数据库
+2026-08-10 15:42:09.989 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:69 - 为指标信息构建向量索引
+2026-08-10 15:49:15.070 | INFO     | request_id - 1 | __main__:reset:36 - 已清空 Qdrant 集合: data-agent-column
+2026-08-10 15:49:15.258 | INFO     | request_id - 1 | __main__:reset:39 - 已清空 Qdrant 集合: data-agent-metric
+2026-08-10 15:49:18.605 | INFO     | request_id - 1 | __main__:reset:42 - 已清空 ES 索引: data-agent-values
+2026-08-10 15:49:18.606 | INFO     | request_id - 1 | __main__:reset:44 - 所有目标存储清空完成，可重新执行 python main.py --reset 重新导入
+2026-08-10 15:49:54.722 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=True
+2026-08-10 15:49:57.493 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 15:49:57.622 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:86 - 已清空 Qdrant 集合: data-agent-column
+2026-08-10 15:49:57.729 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:90 - 已清空 Qdrant 集合: data-agent-metric
+2026-08-10 15:49:58.048 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:94 - 已清空 ES 索引: data-agent-values
+2026-08-10 15:49:58.048 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:54 - 已清空 Qdrant / ES 中的目标存储，准备重新构建
+2026-08-10 15:49:58.153 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 保存表信息到meta数据库
+2026-08-10 15:50:15.760 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段构建向量索引
+2026-08-10 15:50:15.782 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:65 - 为字段取值建立全文索引
+2026-08-10 15:50:15.783 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:72 - 保存指标信息到meta数据库
+2026-08-10 15:50:17.363 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:75 - 为指标信息构建向量索引
+2026-08-10 15:53:50.706 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 15:53:50.909 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 保存表信息到meta数据库
+2026-08-10 15:54:09.051 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:62 - 为字段构建向量索引
+2026-08-10 15:54:09.081 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:65 - 为字段取值建立全文索引
+2026-08-10 15:54:09.082 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:72 - 保存指标信息到meta数据库
+2026-08-10 15:54:10.562 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:75 - 为指标信息构建向量索引
+2026-08-10 16:06:08.964 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=False
+2026-08-10 16:06:14.275 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:06:14.450 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 保存表信息到meta数据库
+2026-08-10 16:06:50.431 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=False
+2026-08-10 16:06:52.714 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:07:15.495 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=False
+2026-08-10 16:07:18.114 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:07:18.224 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 保存表信息到meta数据库
+2026-08-10 16:07:35.355 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:07:41.109 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=False
+2026-08-10 16:07:43.496 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:08:01.846 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:08:11.772 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=False
+2026-08-10 16:08:14.854 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:08:15.005 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 保存表信息到meta数据库
+2026-08-10 16:08:45.129 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=True
+2026-08-10 16:08:47.596 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:08:47.956 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:86 - 已清空 Qdrant 集合: data-agent-column
+2026-08-10 16:08:48.160 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:90 - 已清空 Qdrant 集合: data-agent-metric
+2026-08-10 16:08:49.484 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:94 - 已清空 ES 索引: data-agent-values
+2026-08-10 16:08:49.484 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:54 - 已清空 Qdrant / ES 中的目标存储，准备重新构建
+2026-08-10 16:09:20.866 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=True
+2026-08-10 16:09:23.713 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:49 - 加载完成配置内容读取
+2026-08-10 16:09:23.980 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:87 - 已清空 Qdrant 集合: data-agent-column
+2026-08-10 16:09:24.208 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:91 - 已清空 Qdrant 集合: data-agent-metric
+2026-08-10 16:09:24.981 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:95 - 已清空 ES 索引: data-agent-values
+2026-08-10 16:09:24.981 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:55 - 已清空 Qdrant / ES 中的目标存储，准备重新构建
+2026-08-10 16:09:25.240 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:60 - 保存表信息到meta数据库
+2026-08-10 16:09:33.280 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:49 - 加载完成配置内容读取
+2026-08-10 16:09:33.404 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:60 - 保存表信息到meta数据库
+2026-08-10 16:09:57.140 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=True
+2026-08-10 16:09:59.730 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:49 - 加载完成配置内容读取
+2026-08-10 16:09:59.974 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:87 - 已清空 Qdrant 集合: data-agent-column
+2026-08-10 16:10:00.146 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:91 - 已清空 Qdrant 集合: data-agent-metric
+2026-08-10 16:10:00.552 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:95 - 已清空 ES 索引: data-agent-values
+2026-08-10 16:10:00.552 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:55 - 已清空 Qdrant / ES 中的目标存储，准备重新构建
+2026-08-10 16:10:25.225 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=True
+2026-08-10 16:10:27.376 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:50 - 加载完成配置内容读取
+2026-08-10 16:10:27.524 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:88 - 已清空 Qdrant 集合: data-agent-column
+2026-08-10 16:10:27.671 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:92 - 已清空 Qdrant 集合: data-agent-metric
+2026-08-10 16:10:28.025 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:96 - 已清空 ES 索引: data-agent-values
+2026-08-10 16:10:28.025 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 已清空 Qdrant / ES 中的目标存储，准备重新构建
+2026-08-10 16:10:28.146 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:61 - 保存表信息到meta数据库
+2026-08-10 16:10:53.649 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:64 - 为字段构建向量索引
+2026-08-10 16:10:53.668 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:67 - 为字段取值建立全文索引
+2026-08-10 16:10:53.686 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:74 - 保存指标信息到meta数据库
+2026-08-10 16:10:55.489 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:77 - 为指标信息构建向量索引
+2026-08-10 16:14:39.495 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 16:14:39.794 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-10 16:15:00.312 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 为字段构建向量索引
+2026-08-10 16:15:00.392 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段取值建立全文索引
+2026-08-10 16:15:00.392 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:66 - 保存指标信息到meta数据库
+2026-08-10 16:15:01.953 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:69 - 为指标信息构建向量索引
+2026-08-10 17:13:57.624 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 17:13:57.952 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-10 17:14:30.025 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 为字段构建向量索引
+2026-08-10 17:14:30.162 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段取值建立全文索引
+2026-08-10 17:14:30.164 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:66 - 保存指标信息到meta数据库
+2026-08-10 17:14:32.348 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:69 - 为指标信息构建向量索引
+2026-08-11 09:58:31.807 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-11 09:58:31.921 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-11 10:02:49.915 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-11 10:02:49.991 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-11 10:48:43.063 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=False
+2026-08-11 10:51:04.309 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-11 10:51:04.646 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-11 10:51:39.251 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 为字段构建向量索引
+2026-08-11 10:51:39.300 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段取值建立全文索引
+2026-08-11 10:51:39.300 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:66 - 保存指标信息到meta数据库
+2026-08-11 10:51:42.787 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:69 - 为指标信息构建向量索引
+2026-08-11 10:56:53.300 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=False
+2026-08-11 10:56:56.460 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-11 10:56:56.709 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:57 - 保存表信息到meta数据库
+2026-08-11 10:57:37.735 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:60 - 为字段构建向量索引
+2026-08-11 10:57:37.776 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:63 - 为字段取值建立全文索引
+2026-08-11 10:57:37.777 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:70 - 保存指标信息到meta数据库
+2026-08-11 10:57:41.495 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:73 - 为指标信息构建向量索引
+2026-08-11 11:12:15.779 | INFO     | request_id - 1 | __main__:recall_value:66 - 召回字段取值：[]
+2026-08-12 15:26:36.365 | INFO     | request_id - 1 | __main__:main:27 - 开始构建元知识库，配置文件: D:\data-agent\conf\meta_config.yaml, reset=True
+2026-08-12 15:26:43.311 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-12 15:26:43.736 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:83 - 已清空 Qdrant 集合: data-agent-column
+2026-08-12 15:26:43.976 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:86 - 已清空 Qdrant 集合: data-agent-metric
+2026-08-12 15:26:45.376 | INFO     | request_id - 1 | app.services.meta_knowledge_service:_reset_target_stores:89 - 已清空 ES 索引: data-agent-values
+2026-08-12 15:26:45.376 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:52 - 已清空 Qdrant / ES 中的目标存储，准备重新构建
+2026-08-12 15:26:45.566 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:57 - 保存表信息到meta数据库
+2026-08-12 15:27:04.916 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:60 - 为字段构建向量索引
+2026-08-12 15:27:05.151 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:63 - 为字段取值建立全文索引
+2026-08-12 15:27:05.151 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:70 - 保存指标信息到meta数据库
+2026-08-12 15:27:06.553 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:73 - 为指标信息构建向量索引
+2026-08-13 15:14:00.895 | INFO     | request_id - 1 | app.agent.nodes.add_extra_context:add_extra_context:36 - 额外上下文信息添加，日期信息{'date': '2026-08-13', 'weekday': 'Thursday', 'quarter': 'Q3'},数据库信息{'version': '8.0.46', 'dialect': 'mysql'}
+2026-08-13 15:14:02.609 | INFO     | request_id - 1 | app.agent.nodes.extract_keywords:extract_keywords:50 - 提取关键字成功：['地区', '统计2025年各地区销售总额', '统计', '销售总额']
+2026-08-13 15:14:10.591 | INFO     | request_id - 1 | app.agent.nodes.recall_value:recall_value:66 - 召回字段取值：[]
+2026-08-13 15:14:26.897 | INFO     | request_id - 1 | app.agent.nodes.recall_column:recall_column:68 - 召回字段信息:['fact_order.order_amount', 'fact_order.order_quantity', 'dim_region.region_name', 'dim_region.province', 'dim_region.country', 'fact_order.date_id', 'dim_date.date_id']
+2026-08-13 15:14:28.828 | INFO     | request_id - 1 | app.agent.nodes.recall_metric:recall_metric:65 - 召回指标信息:['GMV', 'AOV']
+2026-08-13 15:14:31.137 | INFO     | request_id - 1 | app.agent.nodes.filter_metric:filter_metric:54 - 过滤后的表信息['GMV']
+2026-08-13 15:14:33.885 | INFO     | request_id - 1 | app.agent.nodes.filter_table:filter_table:72 - 过滤后的表信息['fact_order', 'dim_region']
+2026-08-13 15:14:36.313 | INFO     | request_id - 1 | app.agent.nodes.generate_sql:generate_sql:48 - 生成的sql语句
+：SELECT r.region_name AS 地区, SUM(o.order_amount) AS 销售总额 FROM fact_order o JOIN dim_region r ON o.region_id = r.region_id WHERE o.date_id BETWEEN 20250101 AND 20251231 GROUP BY r.region_name
+2026-08-13 15:14:36.374 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:28 - sql验证正确：SELECT r.region_name AS 地区, SUM(o.order_amount) AS 销售总额 FROM fact_order o JOIN dim_region r ON o.region_id = r.region_id WHERE o.date_id BETWEEN 20250101 AND 20251231 GROUP BY r.region_name
+2026-08-13 15:14:36.401 | INFO     | request_id - 1 | app.agent.nodes.execute_sql:execute_sql:26 - 执行sql的结果[{'地区': '华南', '销售总额': 70202.0}, {'地区': '华东', '销售总额': 107373.0}, {'地区': '华北', '销售总额': 41099.5}, {'地区': '西南', '销售总额': 31528.0}, {'地区': '华中', '销售总额': 28957.0}]

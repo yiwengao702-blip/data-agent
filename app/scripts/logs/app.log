@@ -1,0 +1,32 @@
+2026-08-06 08:37:13.519 | INFO     | request_id - 1 | __main__:build:10 - Building meta knowledge...
+2026-08-06 08:39:01.020 | INFO     | request_id - 1 | __main__:build:14 - Building meta knowledge...
+2026-08-06 14:34:36.484 | INFO     | request_id - 1 | __main__:build:19 - API层接收到:D:\data-agent\conf\meta_config.yaml
+2026-08-06 14:39:30.033 | INFO     | request_id - 1 | __main__:build:19 - API层接收到:D:\data-agent\conf\meta_config.yaml
+2026-08-06 14:39:43.336 | INFO     | request_id - 1 | __main__:build:19 - API层接收到:D:\data-agent\conf\meta_config.yaml
+2026-08-06 15:00:00.560 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:33 - 保存表信息到meta数据库
+2026-08-06 15:19:44.973 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:33 - 保存表信息到meta数据库
+2026-08-06 15:20:37.125 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:33 - 保存表信息到meta数据库
+2026-08-07 09:03:17.849 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:42 - 保存表信息到meta数据库
+2026-08-07 09:13:41.759 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:42 - 保存表信息到meta数据库
+2026-08-07 09:53:03.020 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:46 - 为字段构建向量索引
+2026-08-07 14:26:12.344 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:43 - 加载完成配置内容读取
+2026-08-07 14:26:12.495 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 保存表信息到meta数据库
+2026-08-07 14:26:23.410 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 为字段构建向量索引
+2026-08-07 14:54:43.430 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:54 - 为字段取值建立全文索引
+2026-08-07 14:58:28.314 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:43 - 加载完成配置内容读取
+2026-08-07 14:58:36.709 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 保存表信息到meta数据库
+2026-08-07 14:58:48.201 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:51 - 为字段构建向量索引
+2026-08-07 15:07:28.951 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:54 - 为字段取值建立全文索引
+2026-08-10 09:01:45.630 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 09:01:45.725 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-10 09:01:56.391 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 为字段构建向量索引
+2026-08-10 09:01:56.434 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段取值建立全文索引
+2026-08-10 09:17:41.108 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:66 - 保存指标信息到meta数据库
+2026-08-10 09:27:20.898 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 09:27:20.985 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-10 09:27:59.922 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:48 - 加载完成配置内容读取
+2026-08-10 09:28:00.019 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:53 - 保存表信息到meta数据库
+2026-08-10 09:28:10.663 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:56 - 为字段构建向量索引
+2026-08-10 09:28:10.709 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:59 - 为字段取值建立全文索引
+2026-08-10 09:28:14.756 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:66 - 保存指标信息到meta数据库
+2026-08-10 09:40:42.378 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:69 - 为指标信息构建向量索引
