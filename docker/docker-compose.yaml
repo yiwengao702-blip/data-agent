@@ -24,6 +24,8 @@ services:
     environment:
       discovery.type: single-node
       xpack.security.enabled: "false"
+      # 显式限制 JVM 堆，避免单机内存不足时被 OOM Kill（exit 137）
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
     volumes:

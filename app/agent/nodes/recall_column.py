@@ -46,23 +46,26 @@ async def recall_column(state: DataAgentState, runtime: Runtime[DataAgentContext
         # 2.2 实现字段信息召回
         # 定义字典收集召回的字段信息
         retrieved_columns_map: dict[str, ColumnInfoQdrant] = {}
-        # 变量所有关键
-		# 拿每一个关键字  向量化  去qdrant 查相似度高 向量
-        for keyword in keywords:
-            # 使用向量服务客户端对象关键字进行向量化
-            embedding = await embedding_client.aembed_query(keyword)
 
-            # 使用字段向量库查询payload列表
-            payloads: list[ColumnInfoQdrant] = await column_qdrant_repository.search(embedding)
-            # 遍历字段信息列表
-			# 查完 向量数据库 召回了 5条数据
+        # 各关键字之间相互独立：并发向量化 + 向量检索，用信号量限制并发上限，
+        # 避免一次性把 Embedding/Qdrant 服务打爆（原来串行 await，N 个关键词就是 N 次往返）
+        sem = asyncio.Semaphore(8)
+
+        async def _recall_one(keyword: str) -> list[ColumnInfoQdrant]:
+            async with sem:
+                # 使用向量服务客户端对象关键字进行向量化
+                embedding = await embedding_client.aembed_query(keyword)
+                # 使用字段向量库查询 payload 列表
+                return await column_qdrant_repository.search(embedding)
+
+        # 并发召回，gather 一次性拿到所有关键词的检索结果
+        recall_results = await asyncio.gather(*(_recall_one(k) for k in keywords))
+        # 汇总去重（gather 之后顺序迭代，避免协程间共享字典的并发写问题）
+        for payloads in recall_results:
             for payload in payloads:
-                # 获取字段id,用于存储时去重
                 column_id = payload["id"] # 去重
-                # 判断是否已经存在收集的字典中
                 if column_id not in retrieved_columns_map:
                     retrieved_columns_map[column_id] = payload
-			# 不重复的 字典  key uuid 值 字段信息
         # 将最终去重后，召回的字段信息转换成列表返回
         retrieved_columns = list(retrieved_columns_map.values())
         logger.info(f"召回字段信息:{list(retrieved_columns_map.keys())}")

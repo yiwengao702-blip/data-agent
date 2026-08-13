@@ -35,8 +35,9 @@ class MysqlClientManager:
             url=self._get_url(),
             # 连接池常驻连接数
             pool_size=5,
-            # 取连接前先做 ping 检测，自动剔除死连接
-            pool_pre_ping=True
+            # 注意：不要开启 pool_pre_ping=True。
+            # 异步引擎（asyncmy 驱动）在连接检出时做 pre_ping 会用同步 ping，
+            # 脱离 greenlet 上下文调用会抛 MissingGreenlet；连接存活由异步层自行保证。
         )
         self.session_factory = async_sessionmaker(
             # 绑定异步引擎
@@ -45,8 +46,11 @@ class MysqlClientManager:
             autoflush=True, # 设置自动刷新
             # 会话开始时自动开启事务
             autobegin=True,# 自动开启事务
-            # commit 后 ORM 对象属性过期，再次访问时会重新查库
-            expire_on_commit=True # ORM对象如果过期 会自动重新查询库
+            # 关键：异步场景下必须关闭 expire_on_commit。
+            # 若开启，commit 后 ORM 对象会被过期；当跨 await 再次访问对象属性时，
+            # SQLA 会尝试同步懒加载，脱离 greenlet 上下文从而抛 MissingGreenlet。
+            # 关闭后提交后的对象保留属性值，避免跨 await 的静默懒加载。
+            expire_on_commit=False
         )
 
     async def close(self):

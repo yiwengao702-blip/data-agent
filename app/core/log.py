@@ -1,7 +1,7 @@
 import asyncio
 import sys
+import uuid
 from pathlib import Path
-from Lib import uuid
 from loguru import logger
 
 from app.conf.app_config import app_config

@@ -84,6 +84,15 @@ class ValueEsRepository:
 
                 operations.append(value_info)
             # 保存批次数据  库  insert  upsert   bulk
-            await self.client.bulk(
+            resp = await self.client.bulk(
                 operations=operations,# 执行插入
             )
+            # 检查 bulk 响应：ES 部分文档写入失败不会抛异常，只在 items 里标记 error，必须显式兜底
+            if resp.get("errors"):
+                failed = [
+                    item["index"]["error"]
+                    for item in resp["items"]
+                    if "error" in item.get("index", {})
+                ]
+                # 只展示前 5 条失败原因，避免日志爆炸
+                raise RuntimeError(f"ES bulk 写入失败（共 {len(failed)} 条）：{failed[:5]}")

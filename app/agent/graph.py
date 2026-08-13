@@ -1,7 +1,9 @@
+# 构建工作流对象
 import asyncio
 
 from langgraph.constants import START, END
 from langgraph.graph import StateGraph
+
 from app.agent.context import DataAgentContext
 from app.agent.nodes.add_extra_context import add_extra_context
 from app.agent.nodes.correct_sql import correct_sql
@@ -16,87 +18,82 @@ from app.agent.nodes.recall_metric import recall_metric
 from app.agent.nodes.recall_value import recall_value
 from app.agent.nodes.validate_sql import validate_sql
 from app.agent.state import DataAgentState
-from app.clients.mysql_client_manager import meta_mysql_client_manager, dw_mysql_client_manager
 from app.clients.embedding_client_manager import embedding_client_manager
-from app.clients.es_client_manager import es_client_manager
 from app.clients.qdrant_client_manager import qdrant_client_manager
-from app.repositories.es.value_es_repository import ValueEsRepository
-from app.repositories.mysql.dw_mysql_repository import DwMysqlRepository
-from app.repositories.mysql.meta_mysql_repository import MetaMysqlRepository
 from app.repositories.qdrant.column_qdrant_repository import ColumnQdrantRepository
-from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantRepository
+
+graph_builder = StateGraph(state_schema=DataAgentState,context_schema=DataAgentContext)
+# 添加节点
+graph_builder.add_node("extract_keywords",extract_keywords)
+graph_builder.add_node("recall_column",recall_column)
+graph_builder.add_node("recall_metric",recall_metric)
+graph_builder.add_node("recall_value",recall_value)
+graph_builder.add_node("merge_retrieved_info",merge_retrieved_info)
+graph_builder.add_node("filter_metric",filter_metric)
+graph_builder.add_node("filter_table",filter_table)
+graph_builder.add_node("add_extra_context",add_extra_context)
+graph_builder.add_node("generate_sql",generate_sql)
+graph_builder.add_node("validate_sql",validate_sql)
+graph_builder.add_node("correct_sql",correct_sql)
+graph_builder.add_node("execute_sql",execute_sql)
+
+# 添加边
+graph_builder.add_edge(START,"extract_keywords")
+graph_builder.add_edge("extract_keywords","recall_column")
+graph_builder.add_edge("extract_keywords","recall_metric")
+graph_builder.add_edge("extract_keywords","recall_value")
+graph_builder.add_edge("recall_column","merge_retrieved_info")
+graph_builder.add_edge("recall_metric","merge_retrieved_info")
+graph_builder.add_edge("recall_value","merge_retrieved_info")
+graph_builder.add_edge("merge_retrieved_info","filter_metric")
+graph_builder.add_edge("merge_retrieved_info","filter_table")
+graph_builder.add_edge("filter_metric","add_extra_context")
+graph_builder.add_edge("filter_table","add_extra_context")
+graph_builder.add_edge("add_extra_context","generate_sql")
+graph_builder.add_edge("generate_sql","validate_sql")
 
 
-def route_after_validate(state: DataAgentState) -> str:
-    """根据SQL校验结果路由：有错误则校正后重新校验，无错误则执行"""
-    if state.get("error"):
-        return "correct_sql"
-    return "execute_sql"
+# 处理条件边
+graph_builder.add_conditional_edges(
+    "validate_sql",
+    lambda state: "execute_sql" if state["error"] is None else "correct_sql" ,
+    {"correct_sql":"correct_sql","execute_sql":"execute_sql"}
+)
+graph_builder.add_edge("correct_sql","execute_sql")
+graph_builder.add_edge("execute_sql",END)
 
-
-def build_graph():
-    """构建数据智能体工作流图"""
-    # 创建状态图对象
-    builder = StateGraph(DataAgentState, context_schema=DataAgentContext)
-    # 注册节点
-    builder.add_node("add_extra_context", add_extra_context)
-    builder.add_node("extract_keywords", extract_keywords)
-    builder.add_node("recall_column", recall_column)
-    builder.add_node("recall_metric", recall_metric)
-    builder.add_node("recall_value", recall_value)
-    builder.add_node("merge_retrieved_info", merge_retrieved_info)
-    builder.add_node("filter_table", filter_table)
-    builder.add_node("filter_metric", filter_metric)
-    builder.add_node("generate_sql", generate_sql)
-    builder.add_node("validate_sql", validate_sql)
-    builder.add_node("correct_sql", correct_sql)
-    builder.add_node("execute_sql", execute_sql)
-    # 编排边
-    builder.add_edge(START, "add_extra_context")
-    builder.add_edge("add_extra_context", "extract_keywords")
-    # 三路召回并行执行
-    builder.add_edge("extract_keywords", "recall_column")
-    builder.add_edge("extract_keywords", "recall_metric")
-    builder.add_edge("extract_keywords", "recall_value")
-    # 三路召回全部完成后合并
-    builder.add_edge("recall_column", "merge_retrieved_info")
-    builder.add_edge("recall_metric", "merge_retrieved_info")
-    builder.add_edge("recall_value", "merge_retrieved_info")
-    # 表过滤和指标过滤并行执行
-    builder.add_edge("merge_retrieved_info", "filter_table")
-    builder.add_edge("merge_retrieved_info", "filter_metric")
-    builder.add_edge("filter_table", "generate_sql")
-    builder.add_edge("filter_metric", "generate_sql")
-    # 生成 -> 校验 -> 条件路由（校正重试 / 执行）
-    builder.add_edge("generate_sql", "validate_sql")
-    builder.add_conditional_edges("validate_sql", route_after_validate)
-    builder.add_edge("correct_sql", "validate_sql")
-    builder.add_edge("execute_sql", END)
-    # 编译为可调用的图对象
-    return builder.compile()
-
-
-# 编译后的图对象，供入口/服务层调用
-graph = build_graph()
+# 编译图
+graph = graph_builder.compile()
 
 
 # 测试流式调用
 if __name__ == '__main__':
+    # 仅在直接运行本文件时打印图结构，避免被 query_service 等模块 import 时污染日志/终端
+    print(graph.get_graph().print_ascii())
+    print(graph.get_graph().draw_mermaid())
+
     async def test():
         # 初始化客户端对象
         embedding_client_manager.init()
         qdrant_client_manager.init()
+        from app.clients.es_client_manager import es_client_manager
         es_client_manager.init()
+        from app.clients.mysql_client_manager import meta_mysql_client_manager
         meta_mysql_client_manager.init()
+        from app.clients.mysql_client_manager import dw_mysql_client_manager
         dw_mysql_client_manager.init()        # 构建操作持久层对象
         embedding_client=embedding_client_manager.client
         column_qdrant_repository=ColumnQdrantRepository(qdrant_client_manager.client)
+        from app.repositories.es.value_es_repository import ValueEsRepository
         value_es_repository=ValueEsRepository(es_client_manager.client)
+        from app.repositories.qdrant.metric_qdrant_repository import MetricQdrantRepository
         metric_qdrant_repository=MetricQdrantRepository(qdrant_client_manager.client)
         # 创建操作元数据库的操作对象
         async with meta_mysql_client_manager.session_factory() as meta_session ,dw_mysql_client_manager.session_factory() as dw_session:
             # 创建操作对象
+            from app.repositories.mysql.meta_mysql_repository import MetaMysqlRepository
             meta_mysql_repository=MetaMysqlRepository(meta_session)
+            from app.repositories.mysql.dw_mysql_repository import DwMysqlRepository
             dw_mysql_repository=DwMysqlRepository(dw_session)
             # 创建上下文对象
             context= DataAgentContext(
@@ -120,3 +117,6 @@ if __name__ == '__main__':
         await dw_mysql_client_manager.close()
     # 调用测试函数
     asyncio.run(test())
+
+
+

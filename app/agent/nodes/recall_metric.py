@@ -45,18 +45,19 @@ async def recall_metric(state: DataAgentState, runtime: Runtime[DataAgentContext
         # 2.2 实现指标信息召回
         # 定义字典收集召回的指标信息
         retrieved_metric_map: dict[str, MetricInfoQdrant] = {}
-        # 变量所有关键
-        for keyword in keywords:
-            # 使用向量服务客户端对象关键字进行向量化
-            embedding = await embedding_client.aembed_query(keyword)
 
-            # 使用指标向量库操作对象查询payload列表
-            payloads: list[MetricInfoQdrant] = await metric_qdrant_repository.search(embedding)
-            # 遍历指标信息列表
+        # 与字段召回同理：并发向量化 + 向量检索，信号量限制并发上限
+        sem = asyncio.Semaphore(8)
+
+        async def _recall_one(keyword: str) -> list[MetricInfoQdrant]:
+            async with sem:
+                embedding = await embedding_client.aembed_query(keyword)
+                return await metric_qdrant_repository.search(embedding)
+
+        recall_results = await asyncio.gather(*(_recall_one(k) for k in keywords))
+        for payloads in recall_results:
             for payload in payloads:
-                # 获取指标id,用于存储时去重
                 metric_id = payload["id"]
-                # 判断是否已经存在收集的字典中
                 if metric_id not in retrieved_metric_map:
                     retrieved_metric_map[metric_id] = payload
 

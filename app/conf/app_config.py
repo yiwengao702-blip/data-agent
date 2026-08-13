@@ -65,6 +65,12 @@ class LLMConfig:
 
 
 @dataclass
+class ServerConfig:
+    host: str
+    port: int
+
+
+@dataclass
 class AppConfig:
     logging: LoggingConfig
     db_meta: DBConfig
@@ -73,9 +79,13 @@ class AppConfig:
     embedding: EmbeddingConfig
     es: ESConfig
     llm: LLMConfig
+    server: ServerConfig
 
 # Path(__file__).parents[1] / 'conf' / 'app_config.yaml'
-config_file = Path(__file__).parents[2] / 'conf' / 'app_config.yaml'
+# 配置文件路径：默认取项目根目录 conf/app_config.yaml
+# 支持通过环境变量 DATA_AGENT_CONFIG 指定其他路径（便于测试/多环境部署，不改代码切换配置）
+import os
+config_file = Path(os.environ.get("DATA_AGENT_CONFIG", Path(__file__).parents[2] / 'conf' / 'app_config.yaml'))
 context = OmegaConf.load(config_file)
 schema = OmegaConf.structured(AppConfig)
 app_config: AppConfig = OmegaConf.to_object(OmegaConf.merge(schema, context))

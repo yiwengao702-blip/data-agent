@@ -34,7 +34,7 @@ async def generate_sql(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         prompt = PromptTemplate(template=loader_prompt("generate_sql"),
                                 input_variables=["query", "table_infos", "metric_infos", "date_info", "db_info"])
         # 构建json转换对象--> 此处解析必须使用文本解析方式
-        output_parser = StrOutputParser()
+        output_parser = StrOutputParser() #字符串
         # 构建查询链
         chain = prompt | llm | output_parser
         # 执行查询
@@ -51,3 +51,45 @@ async def generate_sql(state:DataAgentState,runtime:Runtime[DataAgentContext]):
     except Exception as e:
         logger.error(f"生成的sql语句失败:{str(e)}")
         raise
+
+
+if __name__ == '__main__':
+    async def test():
+        # 构造测试状态（只包含 generate_sql 需要使用的字段）
+        state = DataAgentState(
+            query="统计华北地区销售总额",
+            table_infos=[{
+                "name": "sales",
+                "role": "事实表",
+                "description": "销售事实表",
+                "columns": [
+                    {"name": "region", "type": "string", "role": "维度",
+                     "examples": ["华北", "华东"], "description": "地区", "alias": []},
+                    {"name": "amount", "type": "double", "role": "度量",
+                     "examples": [], "description": "销售额", "alias": []},
+                ],
+            }],
+            metric_infos=[{
+                "name": "销售总额",
+                "description": "销售额合计",
+                "relevant_columns": ["amount"],
+                "alias": ["销售额"],
+            }],
+            date_info={"date": "2026-08-12", "weekday": "星期三", "quarter": "Q3"},
+            db_info={"dialect": "mysql", "version": "8.0"},
+        )
+
+        # 收集流式进度输出
+        messages = []
+        def writer(msg):
+            messages.append(msg)
+            print("writer 输出:", msg)
+
+        runtime = Runtime(stream_writer=writer)
+
+        # 执行节点
+        result = await generate_sql(state, runtime)
+        print("返回结果:", result)
+        print("流式输出:", messages)
+
+    asyncio.run(test())

@@ -3,7 +3,6 @@ import yaml
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import PromptTemplate
 from langgraph.runtime import Runtime
-from sqlalchemy import true
 
 from app.agent.context import DataAgentContext
 from app.agent.llm import llm
@@ -52,22 +51,28 @@ async def filter_table(state: DataAgentState, runtime: Runtime[DataAgentContext]
 
         """
         # 2.根据大模型返回根据业务相关的表和列调整table_infos
-        # 2.1判断过滤掉大模型返回与业务无关的表和字段 浅拷贝
-        for table_info in table_infos[:]:
-            # 如果不存在过滤的结果，移除表数据
-            if table_info["name"] not in result:
-                # 移除表数据
-                table_infos.remove(table_info) #
-            else:# 这张表 我要 有用
-                # 如果存在过滤的结果中， 处理表字段
-                # 获取返回指定表的字段列表 # LLM认为需要的字段
-                # selected_columns
-                selected_columns = result[table_info["name"]]
-                # 遍历组合的字段列表  浅拷贝
-                for column in table_info["columns"][:]:
-                    # 判断是否存在返回的结果中
-                    if column["name"] not in selected_columns:
-                        table_info["columns"].remove(column) # 移除
+        # 2.1 防御性处理：LLM 可能返回非 dict（如字符串、list、或包裹了 markdown 的代码块），
+        #     此时不过滤，直接保留全部表与字段，保证后续 generate_sql 仍有上下文可用
+        if not isinstance(result, dict):
+            logger.warning(f"filter_table 期望 LLM 返回 dict，实际返回 {type(result)}，跳过过滤并保留全部表")
+        else:
+            # 判断过滤掉大模型返回与业务无关的表和字段 浅拷贝
+            for table_info in table_infos[:]:
+                # 如果不存在过滤的结果，移除整张表
+                if table_info["name"] not in result:
+                    # 移除表数据
+                    table_infos.remove(table_info) #
+                else:# 这张表 我要 有用
+                    # 如果存在过滤的结果中， 处理表字段
+                    selected_columns = result[table_info["name"]]
+                    # 防御：字段列表异常（非 list）时保留该表全部字段
+                    if not isinstance(selected_columns, list):
+                        continue
+                    # 遍历组合的字段列表  浅拷贝
+                    for column in table_info["columns"][:]:
+                        # 判断是否存在返回的结果中
+                        if column["name"] not in selected_columns:
+                            table_info["columns"].remove(column) # 移除
 
         logger.info(f"过滤后的表信息{[table_info['name'] for table_info in table_infos]}")
         # 结果不符合要求（5。如果选择了多张表，需要确保所选字段包含join所需的主外键）

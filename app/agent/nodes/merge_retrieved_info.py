@@ -1,5 +1,4 @@
 import asyncio
-from os import name
 from langgraph.runtime import Runtime
 from app.agent.context import DataAgentContext
 from app.agent.state import DataAgentState, TableInfoStata, MetricInfoStata, ColumnInfoState, ValueInfoEs
@@ -28,13 +27,13 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
         retrieved_values: list[ValueInfoEs] = state["retrieved_values"]
         # 获取召回的指标信息
         retrieved_metrics: list[MetricInfoQdrant] = state["retrieved_metrics"]
-        # state  三路数据  我们拿3个变量 来接收  list
+		# state  三路数据  我们拿3个变量 来接收  list
         # 获取查询字段信息的mysql客户端对象
         meta_mysql_repository = runtime.context["meta_mysql_repository"]
         # 调整数据结构为字典，目的就是去重
         retrieved_columns_map: dict[str, ColumnInfoQdrant] = {retrieved_column["id"]: retrieved_column for
                                                               retrieved_column in retrieved_columns}
-        # retrieved_columns_map key id  值 所有整条数据   每一个元素  一条数据
+		# retrieved_columns_map key id  值 所有整条数据   每一个元素  一条数据
         # 1.处理召回的指标信息，将指标信息的相关字段加入到字段列表
         for retrieved_metric in retrieved_metrics:
             # 获取指标对应的字段id列表
@@ -69,7 +68,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             # 获取值
             column_value = retrieved_value["value"]
             # 获取列id
-            column_id = retrieved_value["column_id"]  # colums_id 就等于 id
+            column_id = retrieved_value["column_id"] # colums_id 就等于 id
             # 如果值对应的列不存在，直接查询列存储到列map中
             if column_id not in retrieved_columns_map:
                 # 当前对应的值所属的字段不在召回的字段列表中  dim_region.province
@@ -138,8 +137,8 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             }
         }
 
-        #  retrieved_columns_map   键 是 id   值是  三路合并  字段
-        #  table_to_column_map     键 是 table_id  值 是  三路合并 字段
+		#  retrieved_columns_map   键 是 id   值是  三路合并  字段
+		#  table_to_column_map     键 是 table_id  值 是  三路合并 字段
 
         table_to_column_map: dict[str, list[ColumnInfoQdrant]] = {}
         # 遍历字段信息存储字典容器  取出大池子的所有的值
@@ -219,7 +218,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
                 }
             ]
         }
-        # 以上 就已经是三路合并以后的数据  具备 知道所有的 相关字段 、 表 、 真实数据的样本 的信息
+		# 以上 就已经是三路合并以后的数据  具备 知道所有的 相关字段 、 表 、 真实数据的样本 的信息
         # 再强一把 跟我这个表 相关的 所有的 外键  关联表
         # 显示的添加每个表的主外键字段
         for table_id in table_to_column_map.keys():
@@ -227,7 +226,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             key_columns: list[ColumnInfoMySQL] = await meta_mysql_repository.get_key_columns_by_table_id(table_id)
             # 获取当前table_id 对应字段id的列表  table_to_column_map[table_id]:dim_date  dim_region fact_order
             column_ids = [column["id"] for column in table_to_column_map[table_id]]
-            # colum_ids  = [ 所有的 字段的 id]
+           	# colum_ids  = [ 所有的 字段的 id]
             # 遍历查询的主外键列表  key_columns 跟这个问题相关的 所有表的 表里面的 关联字段（主键 外键）
             for key_column in key_columns:
                 # 判断当前主外键列是否存在当前表对应的字段列表中
@@ -377,7 +376,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
                 }
             ]
         }
-        # table_to_column_map
+# table_to_column_map
         # 3.2 table_id-->columns 转换为list[TableInfoStata]
         # 遍历字段分组容器
         for table_id, columns in table_to_column_map.items():
@@ -397,7 +396,7 @@ async def merge_retrieved_info(state: DataAgentState, runtime: Runtime[DataAgent
             # 收集组装的表数据
             table_infos.append(table_info)
         # retrieved_columns_map  三路合并以后的信息  key id  值 字段
-        # table_to_column_map   key: 表名  值 字段
+		# table_to_column_map   key: 表名  值 字段
         # table_infos 里面放的 所有的 表对象
         # metric_infos [对象1 对象 ]
         # 处理指标信息
@@ -493,7 +492,7 @@ if __name__ == "__main__":
 
         # ========== 2. 三路召回（真实数据） ==========
         # 字段召回（真实 Qdrant）
-        column_repo = ColumnQdrantRepository(qdrant_client_manager.client)  #
+        column_repo = ColumnQdrantRepository(qdrant_client_manager.client) #
         runtime_col = MagicMock()
         runtime_col.stream_writer = lambda x: print(f"[字段召回] {x}")
         runtime_col.context = {
@@ -504,7 +503,7 @@ if __name__ == "__main__":
         print(f"字段召回: {len(col_result['retrieved_columns'])} 个")
         for c in col_result["retrieved_columns"]:
             print(f"  - {c['id']} ({c['name']}, {c['role']})")
-        # col_result
+		# col_result
         """
 	{
   "retrieved_columns": [
@@ -578,6 +577,9 @@ if __name__ == "__main__":
         for m in metric_result["retrieved_metrics"]:
             print(f"  - {m['id']} ({m['name']}): relevant_columns={m['relevant_columns']}")
 
+
+
+
         """
         {
 		  "retrieved_metrics": [
@@ -627,17 +629,17 @@ if __name__ == "__main__":
         async with meta_mysql_client_manager.session_factory() as session:
             repo = MetaMysqlRepository(session=session)
             merge_state = {
-                "query": query,  # 原始问题
-                "retrieved_columns": col_result["retrieved_columns"],  # 第一路数据
-                "retrieved_metrics": metric_result["retrieved_metrics"],  # 第二路数据
-                "retrieved_values": val_result["retrieved_values"],  # 第三路数据
+                "query": query,# 原始问题
+                "retrieved_columns": col_result["retrieved_columns"],# 第一路数据
+                "retrieved_metrics": metric_result["retrieved_metrics"],# 第二路数据
+                "retrieved_values": val_result["retrieved_values"],# 第三路数据
             }
             runtime_merge = MagicMock()
             runtime_merge.stream_writer = lambda x: print(f"[合并] {x}")
             runtime_merge.context = {"meta_mysql_repository": repo}
 
             result = await merge_retrieved_info(merge_state, runtime_merge)
-            # 跟我 问题相关的 表（表的描述 表的名称  表的角色）  该表的相关字段columns 每个字段详细信息 三路合并后 所有涉及 这张表字段
+			# 跟我 问题相关的 表（表的描述 表的名称  表的角色）  该表的相关字段columns 每个字段详细信息 三路合并后 所有涉及 这张表字段
             [
                 {
                     "columns": [

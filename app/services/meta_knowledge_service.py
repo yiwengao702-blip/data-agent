@@ -106,9 +106,13 @@ class MetaKnowledgeService:
                 column_infos.append(column_info_mysql)
 
         # 保存表信息到数据库
-        # async with self.meta_mysql_repository.session.begin():
-        #     await self.meta_mysql_repository.save_table_infos(table_infos)
-        #     await self.meta_mysql_repository.save_column_infos(column_infos)
+        # 采用"先按主键删除、再批量插入"的 upsert 语义：
+        # 重复构建（未使用 --reset 时）也不会因主键冲突抛 IntegrityError，而是覆盖更新
+        async with self.meta_mysql_repository.session.begin():
+            await self.meta_mysql_repository.delete_table_infos([t.id for t in table_infos])
+            await self.meta_mysql_repository.delete_column_infos([c.id for c in column_infos])
+            await self.meta_mysql_repository.save_table_infos(table_infos)
+            await self.meta_mysql_repository.save_column_infos(column_infos)
         return column_infos
 
     def _convert_column_info_from_mysql_to_qdrant(self, column_info: ColumnInfoMySQL) -> ColumnInfoQdrant:
@@ -174,7 +178,7 @@ class MetaKnowledgeService:
         payloads = [point["payload"] for point in points]
 
         # 保存字段数据到向量数据库
-        #await self.column_qdrant_repository.upsert_column_embeddings(ids, embeddings, payloads)
+        await self.column_qdrant_repository.upsert_column_embeddings(ids, embeddings, payloads)
 
     async def _save_value_info_to_es(self, meta_config:MetaConfig, column_infos:list[ColumnInfoMySQL]):
 
@@ -215,7 +219,7 @@ class MetaKnowledgeService:
                     )
                     value_infos.append(value_info_es)
         # 保存取值数据到es
-       # await self.value_es_repository.upsert_values(value_infos)
+        await self.value_es_repository.upsert_values(value_infos)
 
     async def _save_metric_info_to_meta_db(self, meta_config:MetaConfig):
         # 定义列表接收指标数据
@@ -242,9 +246,12 @@ class MetaKnowledgeService:
                 column_metric_infos.append(column_metric_mysql)
 
         # 保存到meta数据库
-        # async with self.meta_mysql_repository.session.begin():
-        #     await self.meta_mysql_repository.save_metric_infos(metric_infos)
-        #     await self.meta_mysql_repository.save_column_metric_infos(column_metric_infos)
+        # 同样采用"先按主键删除、再批量插入"的 upsert 语义（指标信息 + 字段指标中间表一并清理再写入）
+        async with self.meta_mysql_repository.session.begin():
+            await self.meta_mysql_repository.delete_metric_infos([m.id for m in metric_infos])
+            await self.meta_mysql_repository.delete_column_metric_by_metrics([m.id for m in metric_infos])
+            await self.meta_mysql_repository.save_metric_infos(metric_infos)
+            await self.meta_mysql_repository.save_column_metric_infos(column_metric_infos)
         return metric_infos
 
     def _convert_metric_info_from_mysql_to_qdrant(self, metric_info:MetricInfoMySQL):

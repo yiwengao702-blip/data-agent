@@ -44,3 +44,8 @@ llm:
   model_name: deepseek-v4-flash-202605
   api_key: sk-tp-C9D14hIN6PAG5zAeGzQamU8IbNuZSjKqHnj4t9RgIHQ1GKo9
   base_url: https://api.lkeap.cloud.tencent.com/plan/v3
+
+# 问数 API 服务监听配置（python server.py 启动时生效）
+server:
+  host: 127.0.0.1
+  port: 8001

@@ -48,11 +48,18 @@ async def recall_value(state: DataAgentState, runtime: Runtime[DataAgentContext]
         keywords = list(set(keywords + result))
         # 定义字典结构数据用户去重
         values_map: dict[str, ValueInfoEs] = {}
-        # 2.2 遍历关键字，根据关键字在es中进行召回
-        for keyword in keywords:# 补充关键词
-            # 根据遍历的关键字，查询字段值数据
-            values: list[ValueInfoEs] = await value_es_repository.search(keyword,threshold=0)
-            # 遍历检索结果
+        # 2.2 遍历关键字，根据关键字在es中进行并发召回
+        # 各关键字相互独立，使用 gather + 信号量并发检索，缩短整体耗时
+        sem = asyncio.Semaphore(8)
+
+        async def _search_one(keyword: str) -> list[ValueInfoEs]:
+            async with sem:
+                # 根据关键字，查询字段值数据
+                return await value_es_repository.search(keyword, threshold=0)
+
+        search_results = await asyncio.gather(*(_search_one(k) for k in keywords))
+        # 遍历检索结果，按 id 去重
+        for values in search_results:
             for value in values:
                 # 获取字段值的id
                 value_id = value['id']

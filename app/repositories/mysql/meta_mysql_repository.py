@@ -43,6 +43,46 @@ class MetaMysqlRepository:
         :return:
         """
         self.session.add_all(column_metric_infos)
+
+    async def delete_table_infos(self, ids: list[str]):
+        """
+        按主键批量删除表信息（构建元知识库时使用，先删后插实现 upsert 语义，避免重复构建主键冲突）
+        :param ids: 表信息主键列表
+        """
+        if not ids:
+            return
+        from sqlalchemy import delete
+        await self.session.execute(delete(TableInfoMySQL).where(TableInfoMySQL.id.in_(ids)))
+
+    async def delete_column_infos(self, ids: list[str]):
+        """
+        按主键批量删除字段信息
+        :param ids: 字段信息主键列表
+        """
+        if not ids:
+            return
+        from sqlalchemy import delete
+        await self.session.execute(delete(ColumnInfoMySQL).where(ColumnInfoMySQL.id.in_(ids)))
+
+    async def delete_metric_infos(self, ids: list[str]):
+        """
+        按主键批量删除指标信息
+        :param ids: 指标信息主键列表
+        """
+        if not ids:
+            return
+        from sqlalchemy import delete
+        await self.session.execute(delete(MetricInfoMySQL).where(MetricInfoMySQL.id.in_(ids)))
+
+    async def delete_column_metric_by_metrics(self, metric_ids: list[str]):
+        """
+        按指标主键批量删除字段-指标中间表记录（逻辑从表，必须与指标信息一并清理）
+        :param metric_ids: 指标主键列表
+        """
+        if not metric_ids:
+            return
+        from sqlalchemy import delete
+        await self.session.execute(delete(ColumnMetricMySQL).where(ColumnMetricMySQL.metric_id.in_(metric_ids)))
     async def get_column_info_by_id(self, column_id: str) -> ColumnInfoMySQL | None:
         """
         根据字段id查询列对象信息

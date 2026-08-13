@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class DwMysqlRepository:
     def __init__(self, session: AsyncSession):
-        self.session = session  # 拿到数据库连接
+        self.session = session # 拿到数据库连接
 
     async def get_column_values(self, table_name: str, column_name: str, limit: int = 10):
         """
@@ -59,6 +59,8 @@ class DwMysqlRepository:
         :param sql:
         :return: 如果sql语法不合法，会抛出异常
         """
+
+
         await self.session.execute(text(f"explain {sql}"))
 
     async def execute_sql(self, sql):
@@ -68,4 +70,6 @@ class DwMysqlRepository:
         :return:
         """
         result = await self.session.execute(text(sql))
-        return [dict(row) for row in result.mappings().fetchall()]
+        return [dict(row)  for row in result.mappings().fetchall()]
+
+

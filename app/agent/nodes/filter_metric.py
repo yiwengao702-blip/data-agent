@@ -44,12 +44,18 @@ async def filter_metric(state: DataAgentState, runtime: Runtime[DataAgentContext
         ]
         """
         # 2.根据大模型返回根据业务相关的指标，调整metric_infos
-        # 2.1判断过滤掉大模型返回与业务无关的指标 浅拷贝
-        for metric_info in metric_infos[:]:
-            # 如果不存在过滤的结果，移除表数据
-            if metric_info["name"] not in result:
-                # 移除表数据
-                metric_infos.remove(metric_info)
+        # 2.1 防御性处理：LLM 可能返回非 list（如字符串、dict、或包裹了 markdown 的代码块），
+        #     此时不过滤，直接保留全部指标，保证后续 generate_sql 仍有上下文可用
+        if not isinstance(result, list):
+            logger.warning(f"filter_metric 期望 LLM 返回 list，实际返回 {type(result)}，跳过过滤并保留全部指标")
+        else:
+            keep_names = set(result)
+            # 判断过滤掉大模型返回与业务无关的指标 浅拷贝
+            for metric_info in metric_infos[:]:
+                # 如果不存在过滤的结果，移除表数据
+                if metric_info["name"] not in keep_names:
+                    # 移除表数据
+                    metric_infos.remove(metric_info)
 
         logger.info(f"过滤后的表信息{[metric_info['name'] for metric_info in metric_infos]}")
         # 结果不符合要求（5。如果选择了多张表，需要确保所选字段包含join所需的主外键）

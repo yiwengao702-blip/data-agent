@@ -1,0 +1,31 @@
+# ===== Python 通用忽略 =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# ===== 虚拟环境（体积大、机器相关，禁止入库） =====
+.venv/
+venv/
+env/
+
+# ===== 日志与运行时产物 =====
+logs/
+*.log
+
+# ===== WorkBuddy 内部目录（工具数据，非源码） =====
+.workbuddy/
+
+# ===== 环境变量 / 密钥 =====
+.env
+.env.*
+
+# ===== 前端依赖（如后续引入 Node 工具链） =====
+node_modules/
+
+# ===== 操作系统产物 =====
+.DS_Store
+Thumbs.db
