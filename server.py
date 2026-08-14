@@ -10,6 +10,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.conf.app_config import app_config
+from app.core.health import check_health
 from app.core.lifespan import lifespan
 from app.api.routers.query_router import query_router
 
@@ -28,8 +29,11 @@ app.include_router(query_router)
 
 @app.get("/api/health", tags=["运维"])
 async def health():
-    """健康检查接口：用于容器探活、负载均衡与上线自检。"""
-    return {"status": "ok", "service": "data-agent"}
+    """
+    健康检查接口：用于容器探活、负载均衡与上线自检。
+    返回各下游依赖（LLM / MySQL / Qdrant / ES / Embedding）的真实连通状态与耗时。
+    """
+    return await check_health()
 
 
 if __name__ == '__main__':

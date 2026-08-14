@@ -28,7 +28,7 @@ FastAPI SSE 流式接口 /api/query
 - **Elasticsearch 8.19（含 IK 中文分词）**：字段取值全文索引 `data-agent-values`
 - **HuggingFace TEI（bge-large-zh-v1.5 CPU）**：向量化模型服务
 
-LLM：DeepSeek（经由腾讯云兼容 OpenAI 接口），用于关键词扩展、表/指标过滤、SQL 生成与校正。
+LLM：默认接入 **阿里云百炼（DashScope）OpenAI 兼容接口**（`qwen-plus`），用于关键词扩展、表/指标过滤、SQL 生成与校正。后端可插拔：改用 DeepSeek / 本地 vLLM 等任何 OpenAI 兼容服务，只需改 `conf/app_config.yaml` 的 `llm` 段；`provider=mock` 时完全离线（无需 Key 与外部依赖）。
 
 ## 二、目录结构
 
@@ -129,11 +129,55 @@ curl -N -X POST http://127.0.0.1:8001/api/query \
 | `qdrant` | 向量库地址，`embedding_size=1024` 须与模型维度一致 |
 | `embedding` | TEI 向量化服务地址（默认 `:8081`） |
 | `es` | Elasticsearch 地址与索引名 |
-| `llm` | 大模型（DeepSeek）的 model / api_key / base_url |
+| `llm` | 大模型后端：provider（openai / mock）、model_name、api_key（**经环境变量注入，禁止硬编码**）、base_url |
 | `server` | API 监听 `host` / `port` |
 | `logging` | 日志输出到控制台 + 文件（`logs/app.log`） |
 
-## 六、本次优化变更清单
+## 六、密钥注入与运行配置（安全）
+
+本项目对密钥采用「环境变量 + `.env` 文件」的隔离模式，杜绝把明文 Key 提交进版本库：
+
+- **`.env`**（已被 `.gitignore` 忽略，**绝不入库**）：存放真实 `DATA_AGENT_LLM_API_KEY` 等密钥，从仓库根目录的 `.env.example` 复制而来：
+  ```bash
+  cp .env.example .env
+  # 然后编辑 .env，填入阿里云百炼控制台获取的 Key
+  ```
+- **`.env.example`**（可提交模板）：仅含占位符与说明，不含任何真实密钥。
+- **自动加载**：服务启动加载配置时（`app/conf/app_config.py`）会自动读取项目根目录的 `.env` 注入环境变量，**无需手动 `export`**。即便 `.env` 缺失或 Key 为空，配置解析也会优雅降级为空字符串（不再因 `KeyError` 在 import 阶段整体崩溃），真实鉴权错误会在实际调用时由上层转成中文提示。
+- **LLM 后端可插拔**：默认接入阿里云百炼（`qwen-plus`）。切换为 DeepSeek / 本地 vLLM 等任意 OpenAI 兼容服务，只需改 `conf/app_config.yaml` 的 `llm` 段（`provider` / `model_name` / `base_url` / `api_key` 来源）；设 `provider: mock` 则完全离线（见下）。
+- **多环境**：通过环境变量 `DATA_AGENT_CONFIG` 指定配置文件路径（如 `conf/app_config.docker.yaml`），实现不改代码切换配置。
+
+> ⚠️ **历史密钥已泄露，必须轮换**：早期版本曾在 `conf/app_config.yaml` 中硬编码过一条 DeepSeek 明文 Key，该密钥已视为泄露，请**立即在对应控制台停用 / 重新生成**，切勿继续使用。当前版本已从配置中彻底移除硬编码密钥。
+
+## 七、离线自检与冒烟测试
+
+无需任何真实后端（MySQL / Qdrant / ES / Embedding）与 LLM Key，即可验证整条问数链路（12 节点）能跑通：
+
+```bash
+# mock 后端：llm.provider=mock，配合 fake 仓库跑通整图
+DATA_AGENT_CONFIG=conf/app_config.mock.yaml python test/smoke_test.py
+```
+
+测试通过会打印流经的全部阶段（提取关键字 → 三路召回 → 合并 → 过滤 → 加上下文 → 生成 SQL → 校验 → 执行），并产出样例执行结果。该测试可作为 CI 的自检门槛。
+
+## 八、容器化部署（Docker）
+
+提供生产参考镜像与一键编排：
+
+```bash
+# 1) 构建并启动全部依赖 + data-agent 服务
+cd docker
+docker compose up -d            # 含 mysql / elasticsearch / qdrant / embedding / data-agent
+
+# 2) 查看问数服务健康状态（容器内已配置 /api/health 探活 + compose healthcheck）
+curl http://127.0.0.1:8001/api/health
+```
+
+- 镜像构建见仓库根目录 `Dockerfile`：基于 `python:3.11-slim`，用 `uv` 按 `uv.lock` 可复现安装依赖，以非 root 用户运行；密钥经 `env_file: ../.env` 注入，**绝不打进镜像**（`.dockerignore` 已排除 `.env`）。
+- 容器内 `data-agent` 通过 `conf/app_config.docker.yaml` 把下游依赖 host 指向 compose 服务名（`mysql` / `qdrant` / `elasticsearch` / `embedding`），与默认 `localhost` 配置区分。
+- 端口映射 `8001:8001`；如需改端口，同步修改 `conf/app_config.docker.yaml` 的 `server.port` 与 compose 映射。
+
+## 九、本次优化变更清单
 
 > 2026-10-13，针对「可直接运行 + 健壮性」做的修复与增强。
 
@@ -156,10 +200,20 @@ curl -N -X POST http://127.0.0.1:8001/api/query \
 12. `prompt_loader` 每次节点调用都读盘 → 加 `lru_cache`。
 13. `filter_metric/filter_table` 对 LLM 返回结构无防御 → 增加类型校验，异常时保留全量不误删。
 
-## 七、常见问题
+**P3 — 企业级可用性与安全（已修，2026-10-13 第二轮）**
+14. **密钥安全化**：从 `conf/app_config.yaml` 彻底移除硬编码的 DeepSeek 明文 Key（视为已泄露）；LLM Key 改为经环境变量 `DATA_AGENT_LLM_API_KEY` 注入。新增 `.env`（gitignore 忽略，**绝不入库**）+ `.env.example`（可提交模板）双层隔离。
+15. **配置崩溃修复**：`${oc.env:DATA_AGENT_LLM_API_KEY}` 在变量缺失时会抛 `KeyError` 导致整个服务在 import 阶段崩溃 → 改为带空默认值 `${oc.env:DATA_AGENT_LLM_API_KEY,""}`，并在加载配置前自动读取 `.env` 注入环境（无需手动 export），缺失变量也不致命。
+16. **LLM 后端可插拔**：`app/agent/llm.py` 重构为工厂模式，`provider=openai`（默认，兼容百炼/DeepSeek/本地 vLLM 等 OpenAI 协议服务）/ `provider=mock`（离线占位，返回格式正确的假数据）。远端客户端加 `with_retry`（指数退避，至多 3 次）提升链路韧性；新增 `describe_llm_error` 把 401/403/429/超时/欠费(Arrearage) 转成中文可读、可操作的提示。
+17. **SSE 错误韧性**：`query_service.py` 在异常时推送结构化错误事件（`{"type":"error",...}`）后再发 `data: [DONE]`，客户端永不挂起。
+18. **真实健康检查**：新增 `app/core/health.py`，`/api/health` 汇总 LLM / MySQL(meta+dw) / Qdrant / ES / Embedding 的真实连通状态与耗时，整体状态为 `ok` / `degraded`，可作为容器探活与上线自检。
+19. **离线冒烟测试**：新增 `test/smoke_test.py`，`DATA_AGENT_CONFIG=conf/app_config.mock.yaml` 驱动 mock LLM + fake 仓库跑通 12 节点全链路，作为 CI 自检门槛；新增 `conf/app_config.mock.yaml`。
+20. **容器化部署**：新增仓库根目录 `Dockerfile`（python:3.11-slim + uv 锁文件可复现安装 + 非 root 运行）、`.dockerignore`（排除 `.env`/`.venv`/日志等，杜绝密钥入镜像）、`conf/app_config.docker.yaml`（下游 host 改 compose 服务名），并在 `docker/docker-compose.yaml` 增加 `data-agent` 服务（含 `/api/health` healthcheck 与 `env_file: ../.env` 注入密钥）。
+
+## 十、常见问题
 
 - **`MissingGreenlet: greenlet_spawn has not been called`**：历史版本的两个 async SQLAlchemy 配置坑（见上文 4、5），已修复；若自行升级 SQLAlchemy 需注意。
 - **Elasticsearch 容器反复退出（exit 137）**：内存不足被 OOM Kill，已通过限制 JVM 堆解决。
-- **问数接口报错 `403 套餐包被禁用`**：LLM 账号的调用套餐被禁用/过期（与代码无关），请到腾讯云控制台检查 `app_config.yaml` 中 `llm.api_key` 对应的套餐包状态。
+- **问数接口报错 `403 套餐包被禁用` / `Arrearage` / `账户状态异常`**：LLM 账号的调用套餐被禁用/过期，或**阿里云账户存在欠费 / 未实名认证**（返回 `400 Arrearage: Access denied, please make sure your account is in good standing`）。这是账户侧问题，与代码无关：请到阿里云百炼控制台处理账户状态（充值 / 实名 / 开通模型）后重试。代码已把此类错误转成中文可读提示。
+- **服务启动即崩溃，报 `KeyError: Environment variable 'DATA_AGENT_LLM_API_KEY' not found`**：旧版本 `${oc.env:...}` 在变量缺失时会抛 KeyError 导致整体崩溃。当前版本已在加载配置前自动读取 `.env`，并给默认值；若仍报此错，请确认项目根目录 `.env` 存在且含 `DATA_AGENT_LLM_API_KEY`（或已通过环境变量注入）。
 - **`from Lib import xxx` 报错 `ModuleNotFoundError`**：旧代码写法，已修复；如还遇到请改用标准库导入。
 - **`python main.py` 报 `TypeError: build() got an unexpected keyword argument 'reset'`**：旧版本入口与函数签名不一致，已修复。

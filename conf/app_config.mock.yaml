@@ -1,0 +1,52 @@
+# 离线 / CI 测试专用配置：llm.provider=mock，无需真实 LLM Key 或任何外部依赖
+# 运行方式：DATA_AGENT_CONFIG=conf/app_config.mock.yaml python test/smoke_test.py
+logging:
+  file:
+    enable: false
+    level: INFO
+    path: logs
+    rotation: "10 MB"
+    retention: "7 days"
+  console:
+    enable: true
+    level: INFO
+
+db_meta:
+  host: localhost
+  port: 3306
+  user: itwwy
+  password: itwwy123
+  database: meta
+
+db_dw:
+  host: localhost
+  port: 3306
+  user: itwwy
+  password: itwwy123
+  database: dw
+
+qdrant:
+  host: localhost
+  port: 6333
+  embedding_size: 1024
+
+embedding:
+  host: localhost
+  port: 8081
+  model: BAAI/bge-large-zh-v1.5
+
+es:
+  host: localhost
+  port: 9200
+  index_name: data_agent
+
+# mock 后端：返回格式正确的占位数据，使整条问数链路可在无 Key / 无外部依赖时跑通
+llm:
+  provider: mock
+  model_name: mock-model
+  api_key: ""
+  base_url: ""
+
+server:
+  host: 127.0.0.1
+  port: 8001

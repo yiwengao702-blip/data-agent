@@ -1,7 +1,35 @@
 from dataclasses import dataclass
 from pathlib import Path
+import os
 
 from omegaconf import OmegaConf
+
+
+# ---- 配置引导：启动时自动加载项目根目录的 .env（含 LLM Key 等密钥） ----
+# 设计约束：企业级服务不应因「忘记 export 环境变量」而在 import 阶段整体崩溃。
+# 这里在加载配置之前把 .env 注入 os.environ；若 .env 不存在或 dotenv 未安装也不影响启动。
+def _load_env_file() -> None:
+    """
+    加载项目根目录的 .env 文件到环境变量（仅补充未设置的变量，不覆盖已有环境值）。
+    优先使用 python-dotenv；若未安装则回退到极简 KEY=VALUE 解析器，
+    保证离线 / 精简环境也能正常启动。
+    """
+    env_path = Path(__file__).resolve().parents[2] / ".env"
+    if not env_path.exists():
+        return
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(env_path, override=False)
+    except Exception:
+        # 极简回退解析：仅补充缺失项，不覆盖
+        with env_path.open("r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, _, val = line.partition("=")
+                key, val = key.strip(), val.strip().strip('"').strip("'")
+                os.environ.setdefault(key, val)
 
 
 # 日志配置
@@ -59,9 +87,13 @@ class ESConfig:
 
 @dataclass
 class LLMConfig:
-    model_name: str
-    api_key: str
-    base_url: str
+    # provider: 可插拔的 LLM 后端类型
+    #   - "openai"：兼容 OpenAI 协议的远端服务（百炼/DashScope、DeepSeek、本地 vLLM 等），默认
+    #   - "mock"  ：离线占位后端，返回格式正确的假数据，用于 CI / 无 Key 环境下的 self-check
+    provider: str = "openai"
+    model_name: str = "qwen-plus"
+    api_key: str = ""
+    base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
 
 @dataclass
@@ -85,6 +117,8 @@ class AppConfig:
 # 配置文件路径：默认取项目根目录 conf/app_config.yaml
 # 支持通过环境变量 DATA_AGENT_CONFIG 指定其他路径（便于测试/多环境部署，不改代码切换配置）
 import os
+# 在加载配置前先把 .env 注入环境（若存在），避免 ${oc.env:...} 因变量缺失而抛 KeyError 使服务整体崩溃
+_load_env_file()
 config_file = Path(os.environ.get("DATA_AGENT_CONFIG", Path(__file__).parents[2] / 'conf' / 'app_config.yaml'))
 context = OmegaConf.load(config_file)
 schema = OmegaConf.structured(AppConfig)

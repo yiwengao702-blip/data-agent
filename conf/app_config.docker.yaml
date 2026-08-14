@@ -1,0 +1,62 @@
+# ============================================================
+# Docker Compose 网络专用配置
+# 由 docker/docker-compose.yaml 中 data-agent 服务的
+#   environment: DATA_AGENT_CONFIG=conf/app_config.docker.yaml
+# 注入容器内。OmegaConf 以本文件为完整配置（非增量合并），
+# 因此这里必须包含全部段落。
+#
+# 与默认 app_config.yaml 的唯一差异：下游依赖 host 改为 compose 服务名（DNS），
+# 因为容器内 localhost 不是那些服务。端口保持各服务在 compose 网络内的监听端口。
+# ============================================================
+
+logging:
+  file:
+    enable: true
+    level: INFO
+    path: logs
+    rotation: "10 MB"
+    retention: "7 days"
+  console:
+    enable: true
+    level: INFO
+
+db_meta:
+  host: mysql        # compose 服务名
+  port: 3306
+  user: itwwy
+  password: itwwy123
+  database: meta
+
+db_dw:
+  host: mysql        # compose 服务名
+  port: 3306
+  user: itwwy
+  password: itwwy123
+  database: dw
+
+qdrant:
+  host: qdrant       # compose 服务名
+  port: 6333
+  embedding_size: 1024
+
+embedding:
+  host: embedding    # compose 服务名
+  port: 8081
+  model: BAAI/bge-large-zh-v1.5
+
+es:
+  host: elasticsearch  # compose 服务名
+  port: 9200
+  index_name: data_agent
+
+# LLM：容器经 env_file(.env) 注入 DATA_AGENT_LLM_API_KEY；缺省空字符串不致命
+llm:
+  provider: openai
+  model_name: qwen-plus
+  api_key: ${oc.env:DATA_AGENT_LLM_API_KEY,""}
+  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+
+# 容器内由 uvicorn 命令行绑定 0.0.0.0，此处的 host 仅作文档参考
+server:
+  host: 0.0.0.0
+  port: 8001

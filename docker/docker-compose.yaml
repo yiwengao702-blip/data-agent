@@ -64,6 +64,36 @@ services:
     volumes:
       - ./embedding/bge-large-zh-v1.5:/models/bge-large-zh-v1.5
 
+  # ---- data-agent 问数服务（本项目主程序） ----
+  # 构建上下文为仓库根目录（../），与 mysql/qdrant/es/embedding 同处默认网络，
+  # 故上游依赖 host 可直接用服务名（mysql / qdrant / elasticsearch / embedding）。
+  data-agent:
+    build:
+      context: ..        # 仓库根目录（docker/ 的上一级）
+      dockerfile: Dockerfile
+    container_name: data-agent
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    # 从项目根目录的 .env 注入密钥（含 DATA_AGENT_LLM_API_KEY）；.env 已被 .gitignore 忽略
+    env_file:
+      - ../.env
+    environment:
+      # 指向容器内使用的 compose 网络配置（下游依赖 host 改为服务名）
+      DATA_AGENT_CONFIG: conf/app_config.docker.yaml
+    depends_on:
+      - mysql
+      - elasticsearch
+      - qdrant
+      - embedding
+    healthcheck:
+      # 复用 /api/health 真实探活；curl 已在镜像内安装（CMD-SHELL 才支持 || 逻辑）
+      test: ["CMD-SHELL", "curl -f http://localhost:8001/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
 volumes:
   mysql_data:
   es_data:

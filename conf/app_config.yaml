@@ -40,10 +40,16 @@ es:
   index_name: data_agent
 
 
+# LLM 配置：默认接入阿里云百炼（DashScope）OpenAI 兼容接口
+# api_key 通过环境变量注入，禁止在此硬编码任何真实密钥（见 .env.example）
+# 切换其他 OpenAI 兼容服务（DeepSeek / 本地 vLLM 等）只需改 model_name / base_url / api_key 来源
 llm:
-  model_name: deepseek-v4-flash-202605
-  api_key: sk-tp-C9D14hIN6PAG5zAeGzQamU8IbNuZSjKqHnj4t9RgIHQ1GKo9
-  base_url: https://api.lkeap.cloud.tencent.com/plan/v3
+  provider: openai
+  model_name: qwen-plus
+  # 引号空默认值：即使环境变量缺失也不会因 KeyError 导致导入崩溃，
+  # get_llm() 会进一步用占位值兜底，真实鉴权错误在实际调用时由上游返回
+  api_key: ${oc.env:DATA_AGENT_LLM_API_KEY,""}
+  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
 
 # 问数 API 服务监听配置（python server.py 启动时生效）
 server:
