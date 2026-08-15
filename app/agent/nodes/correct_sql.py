@@ -54,6 +54,9 @@ async def correct_sql(state: DataAgentState, runtime: Runtime[DataAgentContext])
         })
         logger.info(f"校验生成的正确sql语句\n：{result}")
 
+        # 把校正后的 SQL 推送到流式输出，使前端可直接展示（custom 模式下仅靠 writer 才能触达客户端）
+        writer({"sql": result})
+
         return {"sql": result}
     except Exception as e:
         logger.error(f"校验生成的正确sql语句异常:{str(e)}")

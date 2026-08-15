@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>data-agent · 智能问数平台</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- 顶栏：品牌 + 健康状态 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">DA</span>
+      <div class="brand-text">
+        <h1>data-agent 智能问数平台</h1>
+        <p>基于 LangGraph + 元知识库的自然语言问数服务</p>
+      </div>
+    </div>
+    <div class="health" id="health" title="点击刷新依赖健康状态">
+      <span class="health-dot" id="healthDot"></span>
+      <span class="health-label" id="healthLabel">检测中…</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 左侧：问数输入 -->
+    <section class="panel query-panel">
+      <div class="panel-head">
+        <h2>提出你的问题</h2>
+        <span class="panel-sub">用自然语言描述，系统自动生成并执行 SQL</span>
+      </div>
+
+      <textarea id="queryInput" class="query-input"
+        placeholder="例如：统计 2025 年各地区的销售总额，按金额降序排列"
+        rows="4"></textarea>
+
+      <div class="examples" id="examples">
+        <span class="examples-title">试试这些：</span>
+        <button class="chip" data-q="统计2025年各地区销售总额">统计各地区销售总额</button>
+        <button class="chip" data-q="查询销售额最高的前10个省份">销售额 Top10 省份</button>
+        <button class="chip" data-q="2025年每个月的订单量趋势">按月订单量趋势</button>
+      </div>
+
+      <div class="actions">
+        <button id="runBtn" class="btn btn-primary">开始问数</button>
+        <button id="demoBtn" class="btn btn-ghost" title="无需后端依赖，本地模拟一次完整流式过程">演示（模拟流式）</button>
+        <button id="clearBtn" class="btn btn-link">清空</button>
+      </div>
+      <p class="hint" id="reqHint"></p>
+    </section>
+
+    <!-- 右侧：流式结果 -->
+    <section class="panel result-panel">
+      <div class="panel-head">
+        <h2>执行过程</h2>
+        <span class="panel-sub" id="phaseTag">等待提问…</span>
+      </div>
+
+      <!-- 阶段时间线 -->
+      <ol class="timeline" id="timeline"></ol>
+
+      <!-- SQL 面板 -->
+      <div class="block" id="sqlBlock" hidden>
+        <div class="block-title"><span class="badge badge-sql">SQL</span> 生成的查询语句</div>
+        <pre class="code"><code id="sqlCode"></code></pre>
+        <button class="btn btn-link btn-sm" id="copySql">复制 SQL</button>
+      </div>
+
+      <!-- 结果表格 -->
+      <div class="block" id="resultBlock" hidden>
+        <div class="block-title"><span class="badge badge-ok">结果</span> 查询结果</div>
+        <div class="table-wrap" id="resultTable"></div>
+      </div>
+
+      <!-- 错误提示 -->
+      <div class="alert" id="errorAlert" hidden>
+        <div class="alert-title" id="errorTitle">执行失败</div>
+        <div class="alert-body" id="errorBody"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>data-agent · 问数服务前端</span>
+    <span class="footer-right">接口：<code>POST /api/query</code> · 探活：<code>GET /api/health</code></span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

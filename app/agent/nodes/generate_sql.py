@@ -47,6 +47,9 @@ async def generate_sql(state:DataAgentState,runtime:Runtime[DataAgentContext]):
         })
         logger.info(f"生成的sql语句\n：{result}")
 
+        # 把生成的 SQL 推送到流式输出，使前端可直接展示（custom 模式下仅靠 writer 才能触达客户端）
+        writer({"sql": result})
+
         return {"sql": result}
     except Exception as e:
         logger.error(f"生成的sql语句失败:{str(e)}")

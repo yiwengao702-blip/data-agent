@@ -53,8 +53,9 @@ data-agent/
 │   ├── conf/                # 配置 dataclass 定义
 │   ├── core/                # 日志、lifespan 生命周期
 │   └── prompt/              # 提示词加载器（带缓存）
-├── server.py                # ★ FastAPI 服务入口（启动问数 API）
+├── server.py                # ★ FastAPI 服务入口（启动问数 API + 托管前端）
 ├── main.py                  # 元知识库构建入口（命令行）
+├── frontend/                # 可视化问数前端（原生 HTML/CSS/JS，零构建，由 FastAPI 托管）
 └── pyproject.toml
 ```
 
@@ -120,6 +121,20 @@ curl -N -X POST http://127.0.0.1:8001/api/query \
 
 返回为 SSE：`data: {"stage":"提取关键字"}` → `{"stage":"召回列数据"}` → … → `{"sql":"..."}` → `{"result":[...]}`。
 （Python 客户端见 `test/test.py`。）
+
+### 5. 可视化前端（Web UI）
+
+服务内置一个**纯静态、零构建**的问数前端（商务风），由 FastAPI 直接托管，开箱即用：
+
+- 启动服务后，浏览器打开 **http://127.0.0.1:8001/**（自动跳转到 `/ui/`）；
+- 在输入框提出问题，界面会**实时流式**展示 12 个阶段进度、生成的 SQL、以及查询结果表格；
+- 顶栏「健康状态」实时反映各下游依赖（LLM/MySQL/Qdrant/ES/Embedding）连通情况，点击可手动刷新；
+- 提供「演示（模拟流式）」按钮：**无需启动任何后端依赖**，即可本地预览完整界面与流式效果（便于演示与界面验收）。
+
+前端文件位于 `frontend/`（`index.html` / `styles.css` / `app.js`），样式与交互均为原生实现，不引入任何前端构建工具链。对接的接口：
+
+- 问数：`POST /api/query`（`{"query":"..."}`，SSE 流式返回）
+- 探活：`GET /api/health`
 
 ## 五、配置说明（conf/app_config.yaml）
 
@@ -208,6 +223,8 @@ curl http://127.0.0.1:8001/api/health
 18. **真实健康检查**：新增 `app/core/health.py`，`/api/health` 汇总 LLM / MySQL(meta+dw) / Qdrant / ES / Embedding 的真实连通状态与耗时，整体状态为 `ok` / `degraded`，可作为容器探活与上线自检。
 19. **离线冒烟测试**：新增 `test/smoke_test.py`，`DATA_AGENT_CONFIG=conf/app_config.mock.yaml` 驱动 mock LLM + fake 仓库跑通 12 节点全链路，作为 CI 自检门槛；新增 `conf/app_config.mock.yaml`。
 20. **容器化部署**：新增仓库根目录 `Dockerfile`（python:3.11-slim + uv 锁文件可复现安装 + 非 root 运行）、`.dockerignore`（排除 `.env`/`.venv`/日志等，杜绝密钥入镜像）、`conf/app_config.docker.yaml`（下游 host 改 compose 服务名），并在 `docker/docker-compose.yaml` 增加 `data-agent` 服务（含 `/api/health` healthcheck 与 `env_file: ../.env` 注入密钥）。
+21. **可视化前端（Web UI）**：新增 `frontend/`（原生 HTML/CSS/JS，零构建）作为问数控制台，由 `server.py` 通过 `StaticFiles` 托管在 `/ui`（根路径 `/` 自动重定向）；支持 SSE 实时阶段时间线、SQL 展示与复制、结果表格渲染、错误提示、`/api/health` 探活轮询，并内置「演示（模拟流式）」可在无后端依赖时预览。
+22. **SQL 流式透出**：`generate_sql` / `correct_sql` 节点在生成/校正后额外 `writer({"sql": ...})`，使生成的 SQL 在 `stream_mode="custom"` 下也能经 SSE 触达前端（原先仅写入状态、客户端拿不到 SQL）。
 
 ## 十、常见问题
 
