@@ -22,6 +22,13 @@
     </div>
   </header>
 
+  <!-- 后端未就绪提示 -->
+  <div class="backend-warn" id="backendWarn" hidden>
+    <span class="bw-icon">!</span>
+    <span>部分后端依赖未就绪（LLM / MySQL / Qdrant / ES / Embedding）。问数将失败，请先
+      <code>cd docker &amp;&amp; docker compose up -d</code> 启动依赖；或点「演示」预览界面。</span>
+  </div>
+
   <main class="layout">
     <!-- 左侧：问数输入 -->
     <section class="panel query-panel">
@@ -41,8 +48,14 @@
         <button class="chip" data-q="2025年每个月的订单量趋势">按月订单量趋势</button>
       </div>
 
+      <div class="examples" id="historyBox" hidden>
+        <span class="examples-title">历史提问：</span>
+        <span class="chip-row" id="historyChips"></span>
+      </div>
+
       <div class="actions">
         <button id="runBtn" class="btn btn-primary">开始问数</button>
+        <button id="stopBtn" class="btn btn-stop" disabled>停止</button>
         <button id="demoBtn" class="btn btn-ghost" title="无需后端依赖，本地模拟一次完整流式过程">演示（模拟流式）</button>
         <button id="clearBtn" class="btn btn-link">清空</button>
       </div>
@@ -59,16 +72,30 @@
       <!-- 阶段时间线 -->
       <ol class="timeline" id="timeline"></ol>
 
+      <!-- 运行信息条：耗时 / 行数 -->
+      <div class="runbar" id="runbar" hidden>
+        <span id="elapsed">耗时 0.0s</span>
+        <span id="rowCount"></span>
+      </div>
+
       <!-- SQL 面板 -->
       <div class="block" id="sqlBlock" hidden>
-        <div class="block-title"><span class="badge badge-sql">SQL</span> 生成的查询语句</div>
+        <div class="block-title">
+          <span class="badge badge-sql">SQL</span> 生成的查询语句
+          <span class="block-actions"><button class="btn btn-link btn-sm" id="copySql">复制 SQL</button></span>
+        </div>
         <pre class="code"><code id="sqlCode"></code></pre>
-        <button class="btn btn-link btn-sm" id="copySql">复制 SQL</button>
       </div>
 
       <!-- 结果表格 -->
       <div class="block" id="resultBlock" hidden>
-        <div class="block-title"><span class="badge badge-ok">结果</span> 查询结果</div>
+        <div class="block-title">
+          <span class="badge badge-ok">结果</span> 查询结果
+          <span class="block-actions">
+            <button class="btn btn-link btn-sm" id="exportCsv">导出 CSV</button>
+            <button class="btn btn-link btn-sm" id="exportJson">导出 JSON</button>
+          </span>
+        </div>
         <div class="table-wrap" id="resultTable"></div>
       </div>
 

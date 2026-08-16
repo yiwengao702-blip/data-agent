@@ -128,6 +128,11 @@ curl -N -X POST http://127.0.0.1:8001/api/query \
 
 - 启动服务后，浏览器打开 **http://127.0.0.1:8001/**（自动跳转到 `/ui/`）；
 - 在输入框提出问题，界面会**实时流式**展示 12 个阶段进度、生成的 SQL、以及查询结果表格；
+- **历史提问**：自动记录最近 8 条问题（`localStorage`），以 chips 形式展示，点击即可一键回填重问，刷新页面不丢失；
+- **耗时统计**：进行中实时计时（顶栏「耗时」），完成展示总耗时与结果行数，便于评估链路性能；
+- **可中止**：请求进行中可点「停止」（`AbortController` 中断 fetch 流），避免误发长任务占用资源；
+- **结果导出**：查询结果为表格时，可一键导出 **CSV（含 BOM，Excel 直接打开不乱码）** 或 **JSON**；
+- **后端未就绪提示**：若后端未启动或 `/api/health` 异常，界面顶部出现醒目提示条，引导先启动服务，避免用户面对空白报错；
 - 顶栏「健康状态」实时反映各下游依赖（LLM/MySQL/Qdrant/ES/Embedding）连通情况，点击可手动刷新；
 - 提供「演示（模拟流式）」按钮：**无需启动任何后端依赖**，即可本地预览完整界面与流式效果（便于演示与界面验收）。
 
@@ -225,6 +230,7 @@ curl http://127.0.0.1:8001/api/health
 20. **容器化部署**：新增仓库根目录 `Dockerfile`（python:3.11-slim + uv 锁文件可复现安装 + 非 root 运行）、`.dockerignore`（排除 `.env`/`.venv`/日志等，杜绝密钥入镜像）、`conf/app_config.docker.yaml`（下游 host 改 compose 服务名），并在 `docker/docker-compose.yaml` 增加 `data-agent` 服务（含 `/api/health` healthcheck 与 `env_file: ../.env` 注入密钥）。
 21. **可视化前端（Web UI）**：新增 `frontend/`（原生 HTML/CSS/JS，零构建）作为问数控制台，由 `server.py` 通过 `StaticFiles` 托管在 `/ui`（根路径 `/` 自动重定向）；支持 SSE 实时阶段时间线、SQL 展示与复制、结果表格渲染、错误提示、`/api/health` 探活轮询，并内置「演示（模拟流式）」可在无后端依赖时预览。
 22. **SQL 流式透出**：`generate_sql` / `correct_sql` 节点在生成/校正后额外 `writer({"sql": ...})`，使生成的 SQL 在 `stream_mode="custom"` 下也能经 SSE 触达前端（原先仅写入状态、客户端拿不到 SQL）。
+23. **前端第二轮精致化（2026-10-13 第三轮）**：在首版问数控制台基础上新增——① 历史提问（`localStorage` 持久化最近 8 条，chips 一键回填）；② 耗时统计（实时计时 + 完成展示总行数）；③ 可中止（`AbortController` 中断进行中的 SSE 流）；④ 结果导出（CSV 含 BOM / JSON）；⑤ 后端未就绪提示条（顶栏探活失败时显隐 `backendWarn`，引导先启动服务）。整体商务风进一步精致（顶栏 sticky、金色阴影、层次留白、阶段时间线动画）。
 
 ## 十、常见问题
 

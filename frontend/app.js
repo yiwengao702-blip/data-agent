@@ -3,8 +3,9 @@
  * 职责：
  *   1) 解析 /api/query 的 SSE（POST + ReadableStream 手动解析 data: 事件）
  *   2) 阶段时间线推进、SQL 渲染、结果表格渲染、错误展示、[DONE] 收尾
- *   3) /api/health 探活轮询 + 顶部状态条
+ *   3) /api/health 探活轮询 + 顶部状态条 + 后端未就绪提示
  *   4) 内置「演示（模拟流式）」：无需任何后端依赖即可预览完整界面效果
+ *   5) 实用增强：耗时统计、可中止(AbortController)、历史记录(localStorage)、结果导出
  * ============================================================ */
 
 // 阶段原始字符串 -> 展示文案（原始流里有些阶段带后缀，这里统一美化）
@@ -38,16 +39,29 @@ const errorBody = $("errorBody");
 const phaseTag = $("phaseTag");
 const queryInput = $("queryInput");
 const runBtn = $("runBtn");
+const stopBtn = $("stopBtn");
 const demoBtn = $("demoBtn");
 const clearBtn = $("clearBtn");
 const reqHint = $("reqHint");
 const healthEl = $("health");
 const healthLabel = $("healthLabel");
+const runbar = $("runbar");
+const elapsedEl = $("elapsed");
+const rowCountEl = $("rowCount");
+const backendWarn = $("backendWarn");
+const historyBox = $("historyBox");
+const historyChips = $("historyChips");
 
 // 运行状态
 let running = false;
 let finished = false;
+let aborted = false;
 let stepEls = new Map(); // rawStage -> <li>
+let controller = null;   // AbortController（真实请求可中止）
+let timerId = null;      // 耗时计时器
+let startTime = 0;
+let lastResult = null;   // 最近一次结果（用于导出）
+let healthOk = false;    // 后端整体是否可用
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const nowTime = () =>
@@ -61,16 +75,40 @@ function resetUI() {
   sqlCode.textContent = "";
   resultBlock.hidden = true;
   resultTable.innerHTML = "";
+  lastResult = null;
   errorAlert.hidden = true;
   finished = false;
+  aborted = false;
   phaseTag.textContent = "等待提问…";
+  runbar.hidden = true;
+  elapsedEl.textContent = "耗时 0.0s";
+  rowCountEl.textContent = "";
 }
 
 function setRunning(run) {
   running = run;
   runBtn.disabled = run;
   demoBtn.disabled = run;
+  stopBtn.disabled = !run;
   runBtn.textContent = run ? "问数中…" : "开始问数";
+}
+
+function startTimer() {
+  startTime = Date.now();
+  runbar.hidden = false;
+  elapsedEl.textContent = "耗时 0.0s";
+  timerId = setInterval(() => {
+    const s = ((Date.now() - startTime) / 1000).toFixed(1);
+    elapsedEl.textContent = "耗时 " + s + "s";
+  }, 100);
+}
+function stopTimer() {
+  if (timerId) {
+    clearInterval(timerId);
+    timerId = null;
+    const s = ((Date.now() - startTime) / 1000).toFixed(1);
+    elapsedEl.textContent = "耗时 " + s + "s";
+  }
 }
 
 /* ---------------- 时间线 ---------------- */
@@ -156,6 +194,7 @@ function renderTable(data) {
     });
     table.appendChild(tbody);
     resultTable.appendChild(table);
+    rowCountEl.textContent = "共 " + data.length + " 行";
   } else {
     // 兜底：非标准行结构时以 JSON 展示
     const pre = document.createElement("pre");
@@ -164,18 +203,25 @@ function renderTable(data) {
     pre.style.color = "#1f2d3d";
     pre.textContent = JSON.stringify(data, null, 2);
     resultTable.appendChild(pre);
+    rowCountEl.textContent = "";
   }
 }
 
 function onResult(result) {
   resultBlock.hidden = false;
+  lastResult = result;
   renderTable(result);
 }
 
 function onError(ev) {
   errorAlert.hidden = false;
   errorTitle.textContent = ev.message || "执行失败";
-  errorBody.textContent = ev.detail || JSON.stringify(ev, null, 2);
+  let body = ev.detail || JSON.stringify(ev, null, 2);
+  // 后端未就绪时的友好提示
+  if (!healthOk) {
+    body += "\n\n提示：当前有后端依赖未就绪，请先启动依赖服务。";
+  }
+  errorBody.textContent = body;
   const active = timelineEl.querySelector(".step.active");
   if (active) {
     active.classList.remove("active");
@@ -190,6 +236,7 @@ function onDone() {
     s.classList.add("done");
   });
   if (phaseTag.textContent !== "失败") phaseTag.textContent = "完成";
+  stopTimer();
   setRunning(false);
 }
 
@@ -231,17 +278,21 @@ function handleRaw(raw) {
 async function runQuery(q) {
   resetUI();
   setRunning(true);
+  startTimer();
+  controller = new AbortController();
   try {
     const resp = await fetch("/api/query", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ query: q }),
+      signal: controller.signal,
     });
     if (!resp.ok) {
       onError({
         message: "请求失败",
         detail: "HTTP " + resp.status + " —— 请确认服务已启动且 /api/query 可用",
       });
+      stopTimer();
       setRunning(false);
       return;
     }
@@ -260,13 +311,20 @@ async function runQuery(q) {
       }
     }
     if (buf.trim()) handleRaw(buf); // 兜底：无结尾空行
-    if (!finished) onDone();
+    if (!finished && !aborted) onDone();
   } catch (e) {
-    onError({
-      message: "网络或请求异常",
-      detail: e && e.message ? e.message : String(e),
-    });
+    if (e && e.name === "AbortError") {
+      phaseTag.textContent = "已停止";
+    } else {
+      onError({
+        message: "网络或请求异常",
+        detail: e && e.message ? e.message : String(e),
+      });
+    }
+  } finally {
+    stopTimer();
     setRunning(false);
+    controller = null;
   }
 }
 
@@ -274,6 +332,8 @@ async function runQuery(q) {
 async function runDemo() {
   resetUI();
   setRunning(true);
+  startTimer();
+  aborted = false;
   const stages = [
     "提取关键字---哈哈",
     "召回列数据",
@@ -288,7 +348,9 @@ async function runDemo() {
     "执行SQL",
   ];
   for (const s of stages) {
+    if (aborted) return;
     await sleep(360);
+    if (aborted) return;
     onStage(s);
     if (s === "生成SQL") {
       await sleep(320);
@@ -302,6 +364,7 @@ async function runDemo() {
       );
     }
   }
+  if (aborted) return;
   await sleep(420);
   onResult([
     { region: "华北", total_amount: 1234500.0 },
@@ -314,30 +377,113 @@ async function runDemo() {
   onDone();
 }
 
+/* ---------------- 历史记录（localStorage） ---------------- */
+const HISTORY_KEY = "da_query_history";
+const HISTORY_MAX = 8;
+
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+  } catch (_) {
+    return [];
+  }
+}
+function saveHistory(list) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+  } catch (_) {}
+}
+function pushHistory(q) {
+  let list = loadHistory().filter((x) => x !== q);
+  list.unshift(q);
+  if (list.length > HISTORY_MAX) list = list.slice(0, HISTORY_MAX);
+  saveHistory(list);
+  renderHistory();
+}
+function renderHistory() {
+  const list = loadHistory();
+  if (!list.length) {
+    historyBox.hidden = true;
+    return;
+  }
+  historyBox.hidden = false;
+  historyChips.innerHTML = "";
+  list.forEach((q) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = q;
+    b.title = "重新提问：" + q;
+    b.addEventListener("click", () => {
+      queryInput.value = q;
+      runQuery(q);
+    });
+    historyChips.appendChild(b);
+  });
+}
+
+/* ---------------- 结果导出 ---------------- */
+function downloadFile(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function exportCsv() {
+  if (!Array.isArray(lastResult) || !lastResult.length) return;
+  const cols = Object.keys(lastResult[0]);
+  const escape = (v) => {
+    const s = v === null || v === undefined ? "" : String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const lines = [cols.join(",")];
+  lastResult.forEach((row) => {
+    lines.push(cols.map((c) => escape(row[c])).join(","));
+  });
+  downloadFile("data_agent_result.csv", "﻿" + lines.join("\n"), "text/csv;charset=utf-8");
+}
+function exportJson() {
+  if (!lastResult) return;
+  downloadFile(
+    "data_agent_result.json",
+    JSON.stringify(lastResult, null, 2),
+    "application/json"
+  );
+}
+
 /* ---------------- 健康状态 ---------------- */
 async function refreshHealth() {
   healthEl.classList.remove("ok", "warn", "err");
   healthLabel.textContent = "检测中…";
+  backendWarn.hidden = true;
   try {
     const r = await fetch("/api/health");
     if (!r.ok) throw new Error("HTTP " + r.status);
     const h = await r.json();
     const status = h.status;
     if (status === "ok") {
+      healthOk = true;
       healthEl.classList.add("ok");
       healthLabel.textContent = "服务正常";
     } else {
+      healthOk = false;
       healthEl.classList.add("warn");
-      // 列出异常依赖，便于定位
       const deps = h.dependencies || {};
       const bad = Object.keys(deps).filter((k) => deps[k].status !== "ok");
       healthLabel.textContent = bad.length
         ? "部分依赖异常：" + bad.join("、")
         : "服务降级";
+      backendWarn.hidden = false;
     }
   } catch (e) {
+    healthOk = false;
     healthEl.classList.add("err");
     healthLabel.textContent = "无法连接服务";
+    backendWarn.hidden = false;
   }
 }
 
@@ -352,7 +498,13 @@ function bindEvents() {
     }
     reqHint.textContent = "";
     reqHint.classList.remove("err");
+    pushHistory(q);
     runQuery(q);
+  });
+
+  stopBtn.addEventListener("click", () => {
+    aborted = true;
+    if (controller) controller.abort();
   });
 
   demoBtn.addEventListener("click", () => {
@@ -368,9 +520,12 @@ function bindEvents() {
 
   // 示例问题：点击即填入并直接问数
   document.querySelectorAll(".chip").forEach((chip) => {
+    // 历史 chips 单独绑定，这里只处理示例 chips（带 data-q）
+    if (!chip.dataset.q) return;
     chip.addEventListener("click", () => {
       const q = chip.dataset.q;
       queryInput.value = q;
+      pushHistory(q);
       runQuery(q);
     });
   });
@@ -391,6 +546,12 @@ function bindEvents() {
     });
   }
 
+  // 导出
+  const exCsv = $("exportCsv");
+  if (exCsv) exCsv.addEventListener("click", exportCsv);
+  const exJson = $("exportJson");
+  if (exJson) exJson.addEventListener("click", exportJson);
+
   // 顶栏健康状态点击刷新
   healthEl.addEventListener("click", refreshHealth);
 
@@ -404,5 +565,6 @@ function bindEvents() {
 
 /* ---------------- 启动 ---------------- */
 bindEvents();
+renderHistory();
 refreshHealth();
 setInterval(refreshHealth, 30000); // 每 30s 自动探活
