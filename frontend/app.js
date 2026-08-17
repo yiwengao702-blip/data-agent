@@ -62,6 +62,7 @@ let timerId = null;      // 耗时计时器
 let startTime = 0;
 let lastResult = null;   // 最近一次结果（用于导出）
 let healthOk = false;    // 后端整体是否可用
+let serverElapsedMs = null; // 后端链路累计耗时（SSE 透出），优先作为最终耗时
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const nowTime = () =>
@@ -76,6 +77,7 @@ function resetUI() {
   resultBlock.hidden = true;
   resultTable.innerHTML = "";
   lastResult = null;
+  serverElapsedMs = null;
   errorAlert.hidden = true;
   finished = false;
   aborted = false;
@@ -122,6 +124,7 @@ function ensureStep(rawStage) {
   li.innerHTML =
     '<span class="dot"></span>' +
     '<span class="label">' + (STAGE_LABELS[rawStage] || rawStage) + "</span>" +
+    '<span class="dur"></span>' +
     '<span class="time"></span>';
   // 按规范顺序插入（保证时间线顺序稳定）
   let inserted = false;
@@ -138,7 +141,7 @@ function ensureStep(rawStage) {
   return li;
 }
 
-function onStage(rawStage) {
+function onStage(rawStage, ev) {
   const li = ensureStep(rawStage);
   // 上一个 active 标记为完成
   document.querySelectorAll(".step.active").forEach((s) => {
@@ -149,6 +152,17 @@ function onStage(rawStage) {
   li.classList.add("active");
   const t = li.querySelector(".time");
   if (t) t.textContent = nowTime();
+  // 展示本阶段耗时（后端 SSE 透出的 delta_ms，近似该节点处理耗时，形成性能基线）
+  const d = li.querySelector(".dur");
+  if (d) {
+    if (ev && ev.delta_ms != null) {
+      d.textContent = "耗时 " + ev.delta_ms + "ms";
+      d.classList.add("show");
+    } else {
+      d.textContent = "";
+      d.classList.remove("show");
+    }
+  }
   phaseTag.textContent = STAGE_LABELS[rawStage] || rawStage;
 }
 
@@ -237,6 +251,10 @@ function onDone() {
   });
   if (phaseTag.textContent !== "失败") phaseTag.textContent = "完成";
   stopTimer();
+  // 优先以服务端口径的总耗时展示（更精确，避免客户端往返误差）
+  if (serverElapsedMs != null) {
+    elapsedEl.textContent = "耗时 " + (serverElapsedMs / 1000).toFixed(1) + "s";
+  }
   setRunning(false);
 }
 
@@ -247,7 +265,9 @@ function onEvent(ev) {
     onError(ev);
     return;
   }
-  if (ev.stage) onStage(ev.stage);
+  // 累计后端链路耗时（SSE 透出），最终以服务端口径为准
+  if (ev.elapsed_ms != null) serverElapsedMs = ev.elapsed_ms;
+  if (ev.stage) onStage(ev.stage, ev);
   if (ev.sql != null) onSql(ev.sql);
   if (ev.result != null) onResult(ev.result);
 }

@@ -41,6 +41,22 @@ async def _mysql_ok(manager):
         await session.execute(text("SELECT 1"))
 
 
+async def _client_ok(manager, probe_fn, label: str):
+    """
+    通用客户端探活守卫：先判断 manager.client 是否为 None（lifespan 未执行 / 启动未完成），
+    为 None 时显式抛出清晰错误（交由 _probe 捕获为 error 条目，绝不 500）；
+    否则执行 probe_fn(client) 进行真实连通性探测。
+    这样可避免「在参数求值阶段直接访问 None.xxx() 抛出 AttributeError 导致接口崩溃」的隐患。
+    :param manager: 客户端管理器（含 .client 属性）
+    :param probe_fn: 接收已初始化 client、返回可 await 对象的探测函数
+    :param label: 依赖中文名（用于错误描述）
+    """
+    client = manager.client
+    if client is None:
+        raise RuntimeError(f"{label} 客户端未初始化（服务启动未完成或 lifespan 未执行）")
+    await probe_fn(client)
+
+
 async def check_health() -> dict:
     """汇总各依赖状态，返回结构化健康报告。"""
     deps: dict = {}
@@ -62,15 +78,21 @@ async def check_health() -> dict:
     deps["mysql_dw"] = await _probe("mysql_dw", _mysql_ok(dw_mysql_client_manager))
 
     # Qdrant
-    deps["qdrant"] = await _probe("qdrant", qdrant_client_manager.client.get_collections())
+    deps["qdrant"] = await _probe(
+        "qdrant",
+        _client_ok(qdrant_client_manager, lambda c: c.get_collections(), "Qdrant"),
+    )
 
     # Elasticsearch
-    deps["elasticsearch"] = await _probe("elasticsearch", es_client_manager.client.ping())
+    deps["elasticsearch"] = await _probe(
+        "elasticsearch",
+        _client_ok(es_client_manager, lambda c: c.ping(), "Elasticsearch"),
+    )
 
     # Embedding（轻量探测一次向量化，确认 TEI 服务可达）
     deps["embedding"] = await _probe(
         "embedding",
-        embedding_client_manager.client.aembed_query("健康检查探测"),
+        _client_ok(embedding_client_manager, lambda c: c.aembed_query("健康检查探测"), "Embedding"),
     )
 
     # 整体状态：核心依赖（llm / mysql / qdrant / es）全部 ok 才算 ok，否则 degraded

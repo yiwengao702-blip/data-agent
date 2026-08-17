@@ -2,6 +2,7 @@
 # 问数业务服务：把用户问题交给 LangGraph 工作流，并以 SSE 流式返回。
 # 关键工程约束：无论链路正常还是异常，流都必须以 data: [DONE] 收尾，客户端永不挂起。
 import json
+import time
 
 from langchain_huggingface import HuggingFaceEndpointEmbeddings
 
@@ -51,8 +52,21 @@ class QueryService:
         # 创建状态对象（初始仅有用户问题）
         state = DataAgentState(query=query)
         try:
+            # 链路计时：记录起点与上一个事件时刻，用于给每个 SSE 事件注入耗时埋点
+            _start = time.monotonic()
+            _last = _start
             # 调用图流式输出（节点通过 stream_writer 推送自定义事件）
             async for chunk in graph.astream(input=state, context=context, stream_mode="custom"):
+                _now = time.monotonic()
+                # 给每个事件补充耗时字段：elapsed_ms=链路累计耗时，delta_ms=距上一事件耗时（近似本阶段耗时）
+                # 便于前端时间线展示每阶段耗时、形成性能基线，且不破坏原有事件结构（前端忽略未知字段）
+                if isinstance(chunk, dict):
+                    chunk = {
+                        **chunk,
+                        "elapsed_ms": round((_now - _start) * 1000, 1),
+                        "delta_ms": round((_now - _last) * 1000, 1),
+                    }
+                _last = _now
                 yield f"data: {json.dumps(chunk, ensure_ascii=False, default=str)}\n\n"
 
             # 正常结束：下发终止符，客户端据此关闭流

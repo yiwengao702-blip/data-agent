@@ -232,6 +232,12 @@ curl http://127.0.0.1:8001/api/health
 22. **SQL 流式透出**：`generate_sql` / `correct_sql` 节点在生成/校正后额外 `writer({"sql": ...})`，使生成的 SQL 在 `stream_mode="custom"` 下也能经 SSE 触达前端（原先仅写入状态、客户端拿不到 SQL）。
 23. **前端第二轮精致化（2026-10-13 第三轮）**：在首版问数控制台基础上新增——① 历史提问（`localStorage` 持久化最近 8 条，chips 一键回填）；② 耗时统计（实时计时 + 完成展示总行数）；③ 可中止（`AbortController` 中断进行中的 SSE 流）；④ 结果导出（CSV 含 BOM / JSON）；⑤ 后端未就绪提示条（顶栏探活失败时显隐 `backendWarn`，引导先启动服务）。整体商务风进一步精致（顶栏 sticky、金色阴影、层次留白、阶段时间线动画）。
 
+**P3 — 优化（已修，2026-10-13 第四轮，覆盖 A/B/C/D 四线）**
+24. **后端健壮性·健康检查防崩溃**：`app/core/health.py` 的 `check_health` 原先在参数求值阶段直接访问 `qdrant/es/embedding` 的 `.client.xxx()`，当任一客户端管理器未初始化（`lifespan` 未执行 / 启动未完成，`client=None`）时会抛未捕获 `AttributeError`，导致 `/api/health` 返回 500。新增通用 `_client_ok` 守卫：先判 `client is None` 再探测，未初始化时返回结构化 `error` 条目；配合 `_mysql_ok` 既有引擎判空，现 `/api/health` 在任何依赖未就绪时均优雅返回 `200 + degraded`，绝不 500。
+25. **性能·链路分阶段耗时埋点（SSE 透出）**：`app/services/query_service.py` 在 SSE 流循环中为每个事件注入 `elapsed_ms`（链路累计耗时）与 `delta_ms`（距上一事件耗时，近似本阶段节点耗时），前端时间线据此展示「每阶段耗时」徽标，并以服务端总耗时作为最终耗时口径（更精确，规避客户端往返误差），形成可观测的性能基线。
+26. **部署可观测·CI 自检流水线**：新增 `.github/workflows/ci.yml`，在 `ubuntu-latest` 上用 `uv`（官方 `astral-sh/setup-uv`）基于锁文件可复现安装依赖，并执行 `compileall` 全量编译校验 + `test/smoke_test.py` 离线冒烟测试（mock 后端，无需真实依赖或 API Key），作为 push/PR 的企业级自检门槛。
+27. **前端·数字人助手占位 + 精致化**：问数控制台顶栏新增「AI 问数助手」圆形头像占位（带在线脉冲点），为后续接入真实数字人组件预留锚点；左右双栏布局（`query-panel` / `result-panel`，≤920px 自动堆叠）延续并确认，整体商务风保持克制金色点缀。
+
 ## 十、常见问题
 
 - **`MissingGreenlet: greenlet_spawn has not been called`**：历史版本的两个 async SQLAlchemy 配置坑（见上文 4、5），已修复；若自行升级 SQLAlchemy 需注意。

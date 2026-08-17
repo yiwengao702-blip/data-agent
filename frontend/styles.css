@@ -76,6 +76,35 @@ body {
 .health.err   .health-dot { background: var(--err); box-shadow: 0 0 0 3px rgba(214,69,69,.25); }
 .health-label { color: #e8eef5; }
 
+/* ---------- 顶栏右侧组合（健康 + 数字人助手） ---------- */
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+
+/* 数字人助手占位：圆形头像 + 在线脉冲点，后续可替换为真实数字人组件 */
+.assistant { display: flex; align-items: center; gap: 9px; user-select: none; }
+.assistant-avatar {
+  position: relative;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold) 0%, #e7c987 100%);
+  color: var(--navy); font-weight: 800; font-size: 13px; letter-spacing: .5px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 3px rgba(201,161,74,.22);
+}
+.assistant-avatar::after {
+  content: ""; position: absolute; right: -1px; bottom: -1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--ok); border: 2px solid var(--navy-2);
+  box-shadow: 0 0 0 2px rgba(31,157,107,.3);
+  animation: livePulse 1.8s infinite;
+}
+@keyframes livePulse {
+  0%,100% { box-shadow: 0 0 0 2px rgba(31,157,107,.3); }
+  50%     { box-shadow: 0 0 0 5px rgba(31,157,107,.08); }
+}
+.assistant-text { font-size: 12.5px; color: #e8eef5; }
+@media (max-width: 560px) {
+  .assistant-text { display: none; }
+}
+
 /* ---------- 后端未就绪提示 ---------- */
 .backend-warn {
   max-width: 1180px; margin: 16px auto 0; padding: 0 20px;
@@ -201,6 +230,12 @@ body {
 }
 .step .label { flex: 1; }
 .step .time { font-size: 11.5px; color: #aab4c0; }
+.step .dur {
+  font-size: 11px; color: var(--gold, #b8893b); font-weight: 600;
+  opacity: 0; transition: opacity .2s ease; white-space: nowrap;
+}
+.step .dur.show { opacity: 1; }
+.step.done .dur.show, .step.active .dur.show { opacity: 1; }
 
 .step.done { color: var(--text); }
 .step.done .dot { background: var(--ok); border-color: var(--ok); }
