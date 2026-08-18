@@ -60,21 +60,24 @@ body {
 
 .health {
   display: flex; align-items: center; gap: 8px;
-  padding: 6px 14px; border-radius: 999px;
+  padding: 5px 12px; border-radius: 999px;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.14);
-  cursor: pointer; font-size: 13px; user-select: none;
+  cursor: pointer; font-size: 12.5px; user-select: none;
   transition: background .2s;
+  white-space: nowrap;          /* 防止「服务响应超时」这类长文案在药丸内折行 */
+  flex-shrink: 0;               /* 顶栏拥挤时不被压缩 */
 }
 .health:hover { background: rgba(255,255,255,0.14); }
 .health-dot {
   width: 9px; height: 9px; border-radius: 50%;
   background: #9aa7b5; transition: background .3s;
+  flex-shrink: 0;
 }
 .health.ok    .health-dot { background: var(--ok); box-shadow: 0 0 0 3px rgba(31,157,107,.28); }
 .health.warn  .health-dot { background: var(--warn); box-shadow: 0 0 0 3px rgba(217,138,0,.25); }
 .health.err   .health-dot { background: var(--err); box-shadow: 0 0 0 3px rgba(214,69,69,.25); }
-.health-label { color: #e8eef5; }
+.health-label { color: #e8eef5; white-space: nowrap; }
 
 /* ---------- 顶栏右侧组合（健康 + 数字人助手） ---------- */
 .topbar-right { display: flex; align-items: center; gap: 14px; }
@@ -110,19 +113,25 @@ body {
   max-width: 1180px; margin: 16px auto 0; padding: 0 20px;
 }
 .backend-warn > span {
-  display: flex; align-items: center; gap: 10px;
+  display: block;
   background: #fff7e8; border: 1px solid #f0d9a8;
   color: #8a6310; border-radius: 10px;
-  padding: 10px 16px; font-size: 13px;
+  padding: 10px 14px; font-size: 13px;
+  line-height: 1.6;
 }
 .backend-warn code {
+  display: inline-block;
   background: #f3e6c8; padding: 1px 7px; border-radius: 5px;
   font-family: Consolas, monospace; font-size: 12px;
+  white-space: nowrap; vertical-align: middle;
+  margin: 0 2px;
 }
 .bw-icon {
-  flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%;
+  display: inline-flex; vertical-align: middle;
+  width: 20px; height: 20px; border-radius: 50%;
   background: var(--warn); color: #fff; font-weight: 800;
-  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  align-items: center; justify-content: center; font-size: 13px;
+  margin-right: 8px; flex: 0 0 auto;
 }
 
 /* ---------- 布局 ---------- */
@@ -131,7 +140,8 @@ body {
   margin: 22px auto;
   padding: 0 20px;
   display: grid;
-  grid-template-columns: 1fr 1.25fr;
+  /* 双栏最小宽度保护：避免左侧输入区/右侧结果区被压到标题折行 */
+  grid-template-columns: minmax(300px, 1fr) minmax(380px, 1.25fr);
   gap: 20px;
   align-items: start;
 }
@@ -146,8 +156,11 @@ body {
   box-shadow: var(--shadow);
   padding: 22px;
 }
-.panel-head { margin-bottom: 16px; display: flex; align-items: baseline; gap: 10px; }
-.panel-head h2 { margin: 0; font-size: 16px; font-weight: 700; }
+.panel-head {
+  margin-bottom: 16px; display: flex; align-items: baseline;
+  gap: 10px; flex-wrap: wrap;
+}
+.panel-head h2 { margin: 0; font-size: 16px; font-weight: 700; white-space: nowrap; }
 .panel-sub { font-size: 12.5px; color: var(--text-2); }
 
 /* ---------- 查询输入 ---------- */

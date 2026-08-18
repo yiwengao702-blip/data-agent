@@ -481,7 +481,10 @@ async function refreshHealth() {
   healthLabel.textContent = "检测中…";
   backendWarn.hidden = true;
   try {
-    const r = await fetch("/api/health");
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 5000);
+    const r = await fetch("/api/health", { signal: ctrl.signal });
+    clearTimeout(timer);
     if (!r.ok) throw new Error("HTTP " + r.status);
     const h = await r.json();
     const status = h.status;
@@ -502,7 +505,7 @@ async function refreshHealth() {
   } catch (e) {
     healthOk = false;
     healthEl.classList.add("err");
-    healthLabel.textContent = "无法连接服务";
+    healthLabel.textContent = (e && e.name === "AbortError") ? "服务响应超时" : "无法连接服务";
     backendWarn.hidden = false;
   }
 }
