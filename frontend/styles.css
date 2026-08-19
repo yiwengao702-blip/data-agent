@@ -323,7 +323,7 @@ table.result tbody tr:last-child td { border-bottom: none; }
   border-radius: 10px; padding: 14px 16px;
 }
 .alert-title { font-weight: 700; color: var(--err); margin-bottom: 4px; }
-.alert-body { font-size: 13px; color: #8a3b3b; white-space: pre-wrap; }
+.alert-body { font-size: 13px; color: #8a3b3b; white-space: pre-wrap; word-break: break-word; line-height: 1.55; }
 
 /* ---------- 页脚 ---------- */
 .footer {

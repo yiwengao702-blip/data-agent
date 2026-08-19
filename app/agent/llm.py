@@ -4,6 +4,8 @@
 # - provider=mock    ：离线占位后端，按提示词任务返回格式正确的假数据，用于 CI / 无 Key 环境的 self-check
 # 设计约束：本模块在 import 阶段绝不因缺 Key 而崩溃（构造时即使无 Key 也仅用占位值，真实鉴权错误在实际调用时由上游返回）
 
+import os
+
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
@@ -33,6 +35,28 @@ def describe_llm_error(e: Exception) -> str:
         return "LLM 触发限流（429）：请求过频或额度耗尽，请稍后重试或升级套餐"
     if "timeout" in low or "timed out" in low:
         return "LLM 请求超时：服务网络不通或响应过慢，请检查 base_url 与网络连通性"
+    # 502 / Connection refused：远端模型服务（如本地 vLLM / TGI）未启动，或 base_url 配置错误
+    if (
+        "502" in msg
+        or "503" in msg
+        or "bad gateway" in low
+        or "service unavailable" in low
+        or "connection refused" in low
+        or "actively refused" in low
+        or "target machine" in low
+        or "os error 10061" in low
+        or "cannot connect" in low
+        or "upstream connect failed" in low
+    ):
+        base_url = getattr(app_config.llm, "base_url", None) or "配置的服务地址"
+        # 如果系统设置了代理（HTTP_PROXY/HTTPS_PROXY）且代理本身不可达，也会表现为连不上 localhost:8081 这类地址
+        proxies = [f"{k}={os.environ[k]}" for k in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY") if k in os.environ]
+        proxy_hint = f"当前检测到的代理环境变量：{', '.join(proxies)}" if proxies else "当前未检测到系统代理环境变量"
+        return (
+            f"LLM 推理服务连接失败（502/连接被拒绝）：无法连接到模型服务（base_url={base_url}）。\n"
+            "可能原因：1) 本地模型服务（如 vLLM / TGI）未启动；2) llm.base_url 配置错误；3) 系统代理（HTTP_PROXY/HTTPS_PROXY）指向了未运行的代理（常见为 localhost:8081）。\n"
+            f"排查建议：检查 conf/app_config.yaml 的 llm.base_url；检查并清理环境变量 HTTP_PROXY/HTTPS_PROXY/ALL_PROXY。{proxy_hint}"
+        )
     return f"LLM 调用异常：{msg}"
 
 
