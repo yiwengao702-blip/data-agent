@@ -213,6 +213,8 @@ body {
 .btn-link { background: transparent; color: var(--text-2); padding-left: 4px; padding-right: 4px; }
 .btn-link:hover { color: var(--blue); }
 .btn-sm { font-size: 12px; padding: 5px 10px; }
+.link { color: var(--blue); text-decoration: none; transition: color .15s; }
+.link:hover { text-decoration: underline; color: var(--blue-dark); }
 
 .hint { margin: 10px 0 0; font-size: 12px; color: var(--text-2); min-height: 16px; }
 .hint.err { color: var(--err); }
@@ -331,6 +333,8 @@ table.result tbody tr:last-child td { border-bottom: none; }
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
   font-size: 12px; color: var(--text-2);
 }
+.footer-auth { display: inline-flex; align-items: center; gap: 8px; }
+.footer-auth .sep { color: var(--line); }
 .footer code {
   background: #eef1f6; padding: 1px 6px; border-radius: 5px;
   font-family: Consolas, monospace; font-size: 11.5px;

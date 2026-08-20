@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>注册 · data-agent 智能问数平台</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body class="auth-page">
+  <div class="auth-wrap">
+    <!-- 左侧品牌展示区 -->
+    <aside class="auth-aside">
+      <div class="brand">
+        <span class="brand-mark">DA</span>
+        <div class="brand-text">
+          <h1>data-agent</h1>
+          <p>智能问数平台</p>
+        </div>
+      </div>
+
+      <div class="auth-hero">
+        <h2>开启你的<span class="accent">数据对话</span>之旅</h2>
+        <p>注册即可使用自然语言问数，无需编写 SQL，让数据洞察触手可及。</p>
+        <ul class="auth-features">
+          <li><span class="fi">✓</span> 语义召回：自动识别指标、维度与字段取值</li>
+          <li><span class="fi">✓</span> 流式应答：12 阶段进度实时可见</li>
+          <li><span class="fi">✓</span> 企业级安全：密钥隔离、真实探活、离线自检</li>
+        </ul>
+      </div>
+
+      <div class="auth-aside-foot">© 2026 data-agent · 企业级 NL2SQL 问数服务</div>
+    </aside>
+
+    <!-- 右侧表单区 -->
+    <main class="auth-main">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <span class="brand-mark">DA</span>
+          <div class="brand-text">
+            <h1>data-agent 智能问数平台</h1>
+            <p>基于 LangGraph + 元知识库的自然语言问数服务</p>
+          </div>
+        </div>
+
+        <h2 class="auth-title">创建账号</h2>
+        <p class="auth-sub">填写以下信息完成注册</p>
+
+        <div class="auth-success" id="authSuccess"></div>
+
+        <form class="auth-form" id="authForm" novalidate>
+          <div class="field">
+            <label for="username">用户名</label>
+            <input class="auth-input" id="username" name="username" type="text"
+                   autocomplete="username" placeholder="3-20 位字母、数字或下划线" />
+            <div class="field-error" data-for="username"></div>
+          </div>
+
+          <div class="field">
+            <label for="email">邮箱</label>
+            <input class="auth-input" id="email" name="email" type="email"
+                   autocomplete="email" placeholder="用于接收通知与找回密码" />
+            <div class="field-error" data-for="email"></div>
+          </div>
+
+          <div class="field">
+            <label for="password">密码</label>
+            <div class="input-wrap">
+              <input class="auth-input" id="password" name="password" type="password"
+                     autocomplete="new-password" placeholder="至少 8 位，含字母与数字" />
+              <button type="button" class="pw-toggle" data-target="password" aria-label="显示密码">👁</button>
+            </div>
+            <div class="field-error" data-for="password"></div>
+            <div class="field-hint">建议 8 位以上，包含字母与数字组合</div>
+          </div>
+
+          <div class="field">
+            <label for="confirm">确认密码</label>
+            <div class="input-wrap">
+              <input class="auth-input" id="confirm" name="confirm" type="password"
+                     autocomplete="new-password" placeholder="再次输入密码" />
+              <button type="button" class="pw-toggle" data-target="confirm" aria-label="显示密码">👁</button>
+            </div>
+            <div class="field-error" data-for="confirm"></div>
+          </div>
+
+          <div class="field-row" style="margin-bottom: 22px;">
+            <label class="checkbox">
+              <input type="checkbox" id="agree" />
+              我已阅读并同意<a class="link" href="#" id="termsLink" style="margin-left:4px;">服务条款</a>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+            <span class="btn-label">注 册</span>
+          </button>
+        </form>
+
+        <p class="auth-foot">已有账号？<a class="link" href="login.html">前往登录</a></p>
+        <a class="auth-back" href="/ui/">← 返回问数控制台</a>
+      </div>
+    </main>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>
