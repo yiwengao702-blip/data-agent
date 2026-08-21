@@ -29,11 +29,13 @@
     </div>
   </header>
 
-  <!-- 后端未就绪提示 -->
+  <!-- 后端未就绪提示（轻量商务风：左侧橙条卡片 + 内联图标） -->
   <div class="backend-warn" id="backendWarn" hidden>
-    <span class="bw-icon">!</span>
-    <span>部分后端依赖未就绪（LLM / MySQL / Qdrant / ES / Embedding）。问数将失败，请先
-      <code>cd docker &amp;&amp; docker compose up -d</code> 启动依赖；或点「演示」预览界面。</span>
+    <div class="bw-inner">
+      <span class="bw-icon">!</span>
+      <span class="bw-text">部分后端依赖未就绪（LLM / MySQL / Qdrant / ES / Embedding）。问数将失败，请先
+        <code>cd docker &amp;&amp; docker compose up -d</code> 启动依赖；或点「演示」预览界面。</span>
+    </div>
   </div>
 
   <main class="layout">
@@ -106,10 +108,17 @@
         <div class="table-wrap" id="resultTable"></div>
       </div>
 
-      <!-- 错误提示 -->
+      <!-- 错误提示（精致商务风：白底卡片 + 左侧细红条 + 图标 + 一句话结论 + 可折叠技术详情） -->
       <div class="alert" id="errorAlert" hidden>
-        <div class="alert-title" id="errorTitle">执行失败</div>
-        <div class="alert-body" id="errorBody"></div>
+        <span class="alert-icon">!</span>
+        <div class="alert-main">
+          <div class="alert-title" id="errorTitle">执行失败</div>
+          <div class="alert-msg" id="errorMsg"></div>
+          <details class="alert-detail" id="errorDetail" hidden>
+            <summary>查看技术详情</summary>
+            <pre id="errorBody"></pre>
+          </details>
+        </div>
       </div>
     </section>
   </main>

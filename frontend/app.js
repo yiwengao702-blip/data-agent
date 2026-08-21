@@ -35,6 +35,8 @@ const resultBlock = $("resultBlock");
 const resultTable = $("resultTable");
 const errorAlert = $("errorAlert");
 const errorTitle = $("errorTitle");
+const errorMsg = $("errorMsg");
+const errorDetail = $("errorDetail");
 const errorBody = $("errorBody");
 const phaseTag = $("phaseTag");
 const queryInput = $("queryInput");
@@ -79,6 +81,9 @@ function resetUI() {
   lastResult = null;
   serverElapsedMs = null;
   errorAlert.hidden = true;
+  errorMsg.textContent = "";
+  errorDetail.hidden = true;
+  errorBody.textContent = "";
   finished = false;
   aborted = false;
   phaseTag.textContent = "等待提问…";
@@ -227,15 +232,45 @@ function onResult(result) {
   renderTable(result);
 }
 
+// 把冗长的技术细节（含 base_url / 代理变量等）提炼为一句话可读结论，技术原文折叠展示
+function friendlyError(detail) {
+  const d = (detail || "").toLowerCase();
+  if (d.includes("502") || d.includes("bad gateway")) {
+    return "大模型服务网关异常（502 Bad Gateway），通常是反向代理或网关配置问题，请检查 LLM 网关地址与代理设置。";
+  }
+  if (d.includes("503") || d.includes("service unavailable")) {
+    return "大模型服务暂时不可用（503），请稍后重试或确认服务已启动。";
+  }
+  if (d.includes("connection refused") || d.includes("actively refused") || d.includes("10061") || d.includes("econnrefused")) {
+    return "无法连接大模型服务，请确认服务地址与端口是否正确且已启动。";
+  }
+  if (d.includes("timeout")) {
+    return "请求超时，请检查网络或服务响应是否过慢。";
+  }
+  if (d.includes("401") || d.includes("unauthorized") || d.includes("api key") || d.includes("apikey") || d.includes("鉴权")) {
+    return "鉴权失败，请检查 API Key 或访问凭证是否正确。";
+  }
+  return "执行过程中出现异常，可展开下方技术详情定位原因。";
+}
+
 function onError(ev) {
   errorAlert.hidden = false;
   errorTitle.textContent = ev.message || "执行失败";
-  let body = ev.detail || JSON.stringify(ev, null, 2);
-  // 后端未就绪时的友好提示
+  const detail = ev.detail || "";
+  // 一句话结论（可读、商务克制）；后端未就绪时优先提示启动依赖
+  let msg = friendlyError(detail);
   if (!healthOk) {
-    body += "\n\n提示：当前有后端依赖未就绪，请先启动依赖服务。";
+    msg = "部分后端依赖未就绪，问数将无法执行。请先启动依赖服务，或点「演示」预览界面。";
   }
-  errorBody.textContent = body;
+  errorMsg.textContent = msg;
+  // 长技术细节折叠，避免红色块里堆满 base_url / 代理变量等噪声
+  if (detail) {
+    errorDetail.hidden = false;
+    errorBody.textContent = detail;
+  } else {
+    errorDetail.hidden = true;
+    errorBody.textContent = "";
+  }
   const active = timelineEl.querySelector(".step.active");
   if (active) {
     active.classList.remove("active");
