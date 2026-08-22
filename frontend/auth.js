@@ -1,6 +1,6 @@
 /* ============================================================
    auth.js —— 登录 / 注册 页面交互逻辑
-   职责：实时输入校验、密码显隐、按钮加载动效、模拟提交（前端演示，无真实后端）。
+   职责：实时输入校验、密码显隐、按钮加载动效、调用真实鉴权后端（/api/auth/*）。
    两页共用本脚本，依据是否存在邮箱字段自动区分「注册页 / 登录页」。
    ============================================================ */
 (function () {
@@ -152,28 +152,60 @@
     spinner.className = "spinner";
     btn.appendChild(spinner);
 
-    // 模拟后端请求（前端演示：无真实鉴权接口）
-    setTimeout(function () {
-      btn.classList.remove("loading");
-      btn.disabled = false;
-      label.textContent = original;
-      if (spinner.parentNode) spinner.remove();
+    // 调用真实鉴权后端（data-agent 的 /api/auth/*），不再模拟
+    var endpoint = isRegister ? "/api/auth/register" : "/api/auth/login";
+    var payload = { username: $("username").value.trim(), password: $("password").value };
+    if (isRegister) payload.email = $("email").value.trim();
 
-      // 写入演示会话标记，并重定向到控制台
-      try {
-        localStorage.setItem("da_session", JSON.stringify({
-          user: $("username").value, ts: Date.now()
-        }));
-      } catch (_) { /* 忽略隐私模式等存储异常 */ }
-
-      var success = $("authSuccess");
-      success.style.background = "";
-      success.style.borderColor = "";
-      success.style.color = "";
-      success.textContent = isRegister ? "注册成功！正在进入控制台…" : "登录成功！正在进入控制台…";
-      success.classList.add("show");
-
-      setTimeout(function () { window.location.href = "/ui/"; }, 1100);
-    }, 1100);
+    fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(function (resp) {
+        return resp.json().then(function (data) { return { ok: resp.ok, data: data }; });
+      })
+      .then(function (res) {
+        if (!res.ok) {
+          // 后端校验/业务错误：优先展示 detail 文案
+          throw new Error((res.data && (res.data.detail || res.data.message)) || "请求失败，请稍后重试");
+        }
+        // 真实鉴权成功：保存 Token 与用户名，跳转控制台
+        try {
+          localStorage.setItem("da_session", JSON.stringify({
+            user: res.data.user.username,
+            token: res.data.token,
+            ts: Date.now()
+          }));
+        } catch (_) { /* 忽略隐私模式等存储异常 */ }
+        showAuthMsg(isRegister ? "注册成功！正在进入控制台…" : "登录成功！正在进入控制台…", false);
+        setTimeout(function () { window.location.href = "/ui/"; }, 1100);
+      })
+      .catch(function (err) {
+        showAuthMsg(err.message || "网络异常，请稍后重试", true);
+      })
+      .finally(function () {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        label.textContent = original;
+        if (spinner.parentNode) spinner.remove();
+      });
   });
+
+  // 结果提示：成功（蓝）/ 失败（红）共用 #authSuccess 容器
+  function showAuthMsg(text, isError) {
+    var box = $("authSuccess");
+    if (!box) return;
+    box.textContent = text;
+    if (isError) {
+      box.style.background = "#fdeeee";
+      box.style.borderColor = "#f0caca";
+      box.style.color = "#c0392b";
+    } else {
+      box.style.background = "";
+      box.style.borderColor = "";
+      box.style.color = "";
+    }
+    box.classList.add("show");
+  }
 })();

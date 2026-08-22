@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import os
 
@@ -103,6 +103,15 @@ class ServerConfig:
 
 
 @dataclass
+class AuthConfig:
+    # 鉴权签名密钥：生产环境务必通过环境变量 DATA_AGENT_AUTH_SECRET 覆盖为强随机值，
+    # 否则默认的占位值存在 Token 被伪造的风险。
+    secret_key: str = "change-me-in-prod"
+    # 登录 Token 有效期（小时）
+    token_expire_hours: int = 24
+
+
+@dataclass
 class AppConfig:
     logging: LoggingConfig
     db_meta: DBConfig
@@ -112,6 +121,7 @@ class AppConfig:
     es: ESConfig
     llm: LLMConfig
     server: ServerConfig
+    auth: AuthConfig = field(default_factory=AuthConfig)
 
 # Path(__file__).parents[1] / 'conf' / 'app_config.yaml'
 # 配置文件路径：默认取项目根目录 conf/app_config.yaml

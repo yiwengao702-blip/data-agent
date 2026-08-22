@@ -16,6 +16,7 @@ from app.conf.app_config import app_config
 from app.core.health import check_health
 from app.core.lifespan import lifespan
 from app.api.routers.query_router import query_router
+from app.api.routers.auth_router import auth_router
 
 
 # 创建 FastAPI 应用实例，并绑定 lifespan（启动时初始化 MySQL/Qdrant/ES/Embedding 客户端，关闭时释放）
@@ -28,6 +29,8 @@ app = FastAPI(
 
 # 挂载问数路由（/api/query）
 app.include_router(query_router)
+# 挂载鉴权路由（/api/auth/register、/api/auth/login、/api/auth/me）
+app.include_router(auth_router)
 
 
 # 托管前端静态页面（frontend/ 下的 index.html / styles.css / app.js）。

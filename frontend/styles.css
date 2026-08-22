@@ -108,27 +108,39 @@ body {
   .assistant-text { display: none; }
 }
 
-/* ---------- 后端未就绪提示（轻量商务风） ---------- */
+/* ---------- 后端未就绪提示（默认折叠，轻量商务风） ---------- */
 .backend-warn {
   max-width: 1180px; margin: 16px auto 0; padding: 0 20px;
 }
-.bw-inner {
-  display: flex; align-items: flex-start; gap: 10px;
-  background: var(--gold-soft);
+.bw-details {
   border: 1px solid #ecdcb8;
   border-left: 3px solid var(--warn);
-  color: #8a6d2a; border-radius: 10px;
-  padding: 10px 14px; font-size: 12.5px; line-height: 1.55;
+  background: var(--gold-soft);
+  border-radius: 10px; overflow: hidden;
 }
+.bw-summary {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; cursor: pointer; user-select: none;
+  font-size: 12.5px; color: #8a6d2a;
+  list-style: none; /* 隐藏原生三角，使用自定义箭头 */
+}
+.bw-summary::-webkit-details-marker { display: none; }
+.bw-summary::before {
+  content: "▸"; font-size: 11px; color: #8a6d2a;
+  transition: transform .2s ease; flex: 0 0 auto;
+}
+.bw-details[open] .bw-summary::before { transform: rotate(90deg); }
 .bw-icon {
   flex: 0 0 auto;
   width: 18px; height: 18px; border-radius: 50%;
   background: var(--warn); color: #fff; font-weight: 800;
   display: flex; align-items: center; justify-content: center; font-size: 12px;
-  margin-top: 1px;
 }
-.bw-text { flex: 1; min-width: 0; }
-.bw-text code {
+.bw-summary-text { flex: 1; min-width: 0; }
+.bw-body {
+  padding: 0 14px 12px 42px; font-size: 12.5px; line-height: 1.55; color: #8a6d2a;
+}
+.bw-body code {
   display: inline-block;
   background: #f3e6c8; padding: 1px 7px; border-radius: 5px;
   font-family: Consolas, monospace; font-size: 12px;
@@ -320,36 +332,46 @@ table.result tbody tr:hover { background: #fafbfe; }
 table.result tbody tr:last-child td { border-bottom: none; }
 .cell-num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
 
-/* ---------- 错误提示（精致商务风：白底卡片 + 左侧细红条 + 图标 + 一句话结论） ---------- */
+/* ---------- 错误提示（冷峻商务风：白底卡片 + 左侧中性细条 + 图标 + 一句话结论） ---------- */
 .alert {
   margin-top: 18px;
   display: flex; gap: 12px;
   background: #fff;
   border: 1px solid var(--line);
-  border-left: 3px solid var(--err);
+  border-left: 3px solid var(--text-2);   /* 中性冷峻条，替代刺眼红 */
   border-radius: 10px; padding: 14px 16px;
   box-shadow: var(--shadow);
 }
 .alert-icon {
   flex: 0 0 auto;
   width: 22px; height: 22px; border-radius: 50%;
-  background: var(--err); color: #fff; font-weight: 800;
+  background: var(--text-2); color: #fff; font-weight: 800;   /* 中性灰图标 */
   display: flex; align-items: center; justify-content: center;
   font-size: 14px; margin-top: 1px;
 }
 .alert-main { flex: 1; min-width: 0; }
-.alert-title { font-weight: 700; color: var(--text); font-size: 14px; margin-bottom: 4px; }
-.alert-msg { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.alert-head { display: flex; align-items: center; gap: 10px; }
+.alert-title { font-weight: 700; color: var(--text); font-size: 14px; }
+.btn-copy {
+  margin-left: auto;
+  border: 1px solid var(--line); background: #f7f9fc;
+  color: var(--text-2); font-size: 12px; padding: 3px 10px;
+  border-radius: 7px; cursor: pointer; transition: all .15s;
+  font-family: inherit;
+}
+.btn-copy:hover { border-color: var(--blue); color: var(--blue); background: #eef3ff; }
+.btn-copy.done { border-color: var(--ok); color: var(--ok); background: #e6f6ef; }
+.alert-msg { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-top: 4px; }
 .alert-detail { margin-top: 10px; }
 .alert-detail summary {
-  cursor: pointer; font-size: 12.5px; color: var(--err);
+  cursor: pointer; font-size: 12.5px; color: var(--text-2);
   user-select: none; width: fit-content;
 }
 .alert-detail summary:hover { text-decoration: underline; }
 .alert-detail pre {
   margin: 8px 0 0; padding: 10px 12px;
-  background: #fbf2f2; border: 1px solid #f0dada; border-radius: 8px;
-  font-size: 12px; line-height: 1.55; color: #8a3b3b;
+  background: #f6f8fb; border: 1px solid var(--line); border-radius: 8px;
+  font-size: 12px; line-height: 1.55; color: var(--text-2);
   white-space: pre-wrap; word-break: break-word;
   font-family: Consolas, "JetBrains Mono", monospace;
 }

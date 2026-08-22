@@ -38,6 +38,7 @@ const errorTitle = $("errorTitle");
 const errorMsg = $("errorMsg");
 const errorDetail = $("errorDetail");
 const errorBody = $("errorBody");
+const copyError = $("copyError");
 const phaseTag = $("phaseTag");
 const queryInput = $("queryInput");
 const runBtn = $("runBtn");
@@ -488,6 +489,21 @@ function downloadFile(filename, content, mime) {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+// 复制文本到剪贴板的降级方案（隐私模式或旧浏览器无 navigator.clipboard 时）
+function fallbackCopy(text, done) {
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    done();
+  } catch (_) { /* 复制失败静默忽略 */ }
+}
 function exportCsv() {
   if (!Array.isArray(lastResult) || !lastResult.length) return;
   const cols = Object.keys(lastResult[0]);
@@ -609,6 +625,31 @@ function bindEvents() {
   if (exCsv) exCsv.addEventListener("click", exportCsv);
   const exJson = $("exportJson");
   if (exJson) exJson.addEventListener("click", exportJson);
+
+  // 复制错误信息（结论 + 技术详情，便于反馈排查）
+  if (copyError) {
+    copyError.addEventListener("click", () => {
+      const title = errorTitle.textContent || "执行失败";
+      const msg = errorMsg.textContent || "";
+      const detail = errorDetail.hidden ? "" : (errorBody.textContent || "");
+      const text = [title, msg, detail].filter(Boolean).join("\n\n");
+      if (!text.trim()) return;
+      const markDone = () => {
+        const old = copyError.textContent;
+        copyError.textContent = "已复制";
+        copyError.classList.add("done");
+        setTimeout(() => {
+          copyError.textContent = old;
+          copyError.classList.remove("done");
+        }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(markDone).catch(() => fallbackCopy(text, markDone));
+      } else {
+        fallbackCopy(text, markDone);
+      }
+    });
+  }
 
   // 顶栏健康状态点击刷新
   healthEl.addEventListener("click", refreshHealth);
