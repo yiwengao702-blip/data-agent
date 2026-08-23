@@ -16,6 +16,10 @@ env/
 logs/
 *.log
 
+# ===== 鉴权用户库（本地 SQLite，含运行时账户数据，禁止入库） =====
+data/auth.db
+data/
+
 # ===== WorkBuddy 内部目录（工具数据，非源码） =====
 .workbuddy/
 
