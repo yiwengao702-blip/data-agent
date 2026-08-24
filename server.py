@@ -15,6 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from app.conf.app_config import app_config
 from app.core.health import check_health
 from app.core.lifespan import lifespan
+from app.core.middleware import RateLimitMiddleware, SecurityHeadersMiddleware
 from app.api.routers.query_router import query_router
 from app.api.routers.auth_router import auth_router
 
@@ -26,6 +27,29 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+# ---- 企业级安全加固中间件（嵌套顺序：CORS 最外 → 限流 → 安全头 最内） ----
+# 1) 安全响应头：仅补充响应头，不改动响应体，对 SSE 流式接口安全无副作用
+app.add_middleware(SecurityHeadersMiddleware)
+
+# 2) 鉴权接口限流：按客户端 IP 对 /api/auth/* 做固定窗口限流，抵御暴力破解与接口滥用
+app.add_middleware(
+    RateLimitMiddleware,
+    paths=["/api/auth/"],
+    limit_per_min=app_config.auth.rate_limit_per_min,
+)
+
+# 3) CORS：仅当显式配置了 allowed_origins 才开启（同源部署无需跨域）
+if app_config.auth.allowed_origins:
+    from fastapi.middleware.cors import CORSMiddleware
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=app_config.auth.allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # 挂载问数路由（/api/query）
 app.include_router(query_router)

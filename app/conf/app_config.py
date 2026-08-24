@@ -109,6 +109,12 @@ class AuthConfig:
     secret_key: str = "change-me-in-prod"
     # 登录 Token 有效期（小时）
     token_expire_hours: int = 24
+    # 是否强制要求登录后才能调用 /api/query（生产建议 true；默认 false 便于无登录演示）
+    require_auth: bool = False
+    # 允许跨域访问的前端来源（CORS）；为空表示不开启 CORS（同源部署无需）
+    allowed_origins: list = field(default_factory=list)
+    # 鉴权接口每分钟单 IP 限流阈值（防暴力破解）；<=0 表示不限流
+    rate_limit_per_min: int = 30
 
 
 @dataclass

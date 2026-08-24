@@ -384,6 +384,7 @@ table.result tbody tr:last-child td { border-bottom: none; }
 }
 .footer-auth { display: inline-flex; align-items: center; gap: 8px; }
 .footer-auth .sep { color: var(--line); }
+.footer-auth .auth-user { color: var(--text); font-weight: 600; }
 .footer code {
   background: #eef1f6; padding: 1px 6px; border-radius: 5px;
   font-family: Consolas, monospace; font-size: 11.5px;

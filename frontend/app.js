@@ -71,6 +71,47 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const nowTime = () =>
   new Date().toLocaleTimeString("zh-CN", { hour12: false });
 
+// ---------------- 登录态（与真实鉴权后端联动） ----------------
+function getSession() {
+  // 读取本地会话（含 token + username），解析失败返回 null
+  try {
+    return JSON.parse(localStorage.getItem("da_session") || "null");
+  } catch (_) {
+    return null;
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+function renderAuthState() {
+  const box = $("footerAuth");
+  if (!box) return;
+  const s = getSession();
+  if (s && s.token && s.user) {
+    box.innerHTML =
+      '<span class="auth-user">你好，' + escapeHtml(s.user) + "</span>" +
+      '<span class="sep">·</span>' +
+      '<a class="link" href="#" id="logoutLink">退出</a>';
+    const lo = $("logoutLink");
+    if (lo) {
+      lo.addEventListener("click", (e) => {
+        e.preventDefault();
+        try { localStorage.removeItem("da_session"); } catch (_) {}
+        renderAuthState();
+      });
+    }
+  } else {
+    box.innerHTML =
+      '<a class="link" href="/ui/login.html">登录</a>' +
+      '<span class="sep">·</span>' +
+      '<a class="link" href="/ui/register.html">注册</a>';
+  }
+}
+
 /* ---------------- UI 重置与状态切换 ---------------- */
 function resetUI() {
   timelineEl.innerHTML = "";
@@ -337,12 +378,27 @@ async function runQuery(q) {
   startTimer();
   controller = new AbortController();
   try {
+    // 携带登录 Token（若已登录），配合后端 require_auth 生产策略
+    const s = getSession();
+    const headers = { "Content-Type": "application/json" };
+    if (s && s.token) headers["Authorization"] = "Bearer " + s.token;
     const resp = await fetch("/api/query", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
       body: JSON.stringify({ query: q }),
       signal: controller.signal,
     });
+    if (resp.status === 401) {
+      // 未登录或 Token 失效：提示并引导登录
+      onError({
+        message: "需要登录",
+        detail: "当前接口需要登录后才能问数，请先登录或注册账户。",
+      });
+      window.location.href = "/ui/login.html";
+      stopTimer();
+      setRunning(false);
+      return;
+    }
     if (!resp.ok) {
       onError({
         message: "请求失败",
@@ -665,5 +721,6 @@ function bindEvents() {
 /* ---------------- 启动 ---------------- */
 bindEvents();
 renderHistory();
+renderAuthState();
 refreshHealth();
 setInterval(refreshHealth, 30000); // 每 30s 自动探活
