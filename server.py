@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from app.conf.app_config import app_config
 from app.core.health import check_health
 from app.core.lifespan import lifespan
-from app.core.middleware import RateLimitMiddleware, SecurityHeadersMiddleware
+from app.core.middleware import AuditMiddleware, RateLimitMiddleware, SecurityHeadersMiddleware
 from app.api.routers.query_router import query_router
 from app.api.routers.auth_router import auth_router
 
@@ -39,7 +39,10 @@ app.add_middleware(
     limit_per_min=app_config.auth.rate_limit_per_min,
 )
 
-# 3) CORS：仅当显式配置了 allowed_origins 才开启（同源部署无需跨域）
+# 3) 接口级审计：记录 /api/* 的方法/路径/状态/耗时/客户端IP/操作用户（合规与追溯）
+app.add_middleware(AuditMiddleware)
+
+# 4) CORS：仅当显式配置了 allowed_origins 才开启（同源部署无需跨域）
 if app_config.auth.allowed_origins:
     from fastapi.middleware.cors import CORSMiddleware
 

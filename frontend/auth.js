@@ -9,11 +9,17 @@
   var form = $("authForm");
   if (!form) return;
 
-  var isRegister = !!$("email"); // 含邮箱字段 => 注册页
+  // 页面识别：优先读取表单上的 data-auth-page 显式标记（register / login）。
+  // 若标记缺失（例如浏览器缓存了旧版 HTML），再退回“是否含邮箱字段”的判断，
+  // 避免旧缓存把注册页误判为登录页 —— 那样会走登录校验分支导致永远无法提交。
+  var pageKind = (form.getAttribute("data-auth-page") || "").toLowerCase();
+  var isRegister = pageKind === "register" || (pageKind !== "login" && !!$("email"));
 
   // ---------- 校验规则 ----------
   var rules = {
-    username: function (v) { return "请输入用户名"; }, // 登录页：宽松
+    // 登录页：用户名/邮箱只需非空即可（具体是否存在由后端统一校验），
+    // 注意：这里必须依据 v 判断，不能无条件返回错误（否则登录会被永久卡死）。
+    username: function (v) { return v ? "" : "请输入用户名或邮箱"; },
     email: function (v) {
       if (!v) return "请输入邮箱";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return "邮箱格式不正确";
@@ -21,8 +27,9 @@
     },
     password: function (v) {
       if (!v) return "请输入密码";
-      if (v.length < 8) return "密码至少 8 位";
-      if (!/[a-zA-Z]/.test(v) || !/[0-9]/.test(v)) return "密码需同时包含字母与数字";
+      // 与后端 /api/auth/register 保持一致：后端要求 >= 6 位；
+      // 前端不再额外加严（如强制字母+数字），以免误拦本可注册通过的密码。
+      if (v.length < 6) return "密码至少 6 位";
       return "";
     },
     confirm: function (v) {
@@ -33,11 +40,11 @@
     }
   };
 
-  // 注册页用户名规则收紧（3-20 位字母数字下划线）
+  // 注册页用户名规则（与后端 _USER_RE 对齐：3-32 位字母、数字或下划线）
   if (isRegister) {
     rules.username = function (v) {
       if (!v) return "请输入用户名";
-      if (!/^[A-Za-z0-9_]{3,20}$/.test(v)) return "用户名需为 3-20 位字母、数字或下划线";
+      if (!/^[A-Za-z0-9_]{3,32}$/.test(v)) return "用户名需为 3-32 位字母、数字或下划线";
       return "";
     };
   }
@@ -113,8 +120,16 @@
   // ---------- 提交 ----------
   function validateAll() {
     var ok = true;
+    var firstBad = null;
     Object.keys(rules).forEach(function (name) {
-      if (!validateField(name)) ok = false;
+      // 关键：跳过当前页面不存在的字段。
+      // 登录页并没有「邮箱 / 确认密码」输入框，若仍按空值校验会永远报错，
+      // 导致登录/提交被永久卡死（这是历史 bug 的根因）。
+      if (!$(name)) return;
+      if (!validateField(name)) {
+        ok = false;
+        if (!firstBad) firstBad = name;
+      }
     });
     // 注册页：检查同意条款
     if (isRegister) {
@@ -131,8 +146,18 @@
         agreeBox.textContent = "请先阅读并同意服务条款";
         agreeBox.classList.add("show");
         ok = false;
+        if (!firstBad) firstBad = "agree";
       } else {
         agreeBox.classList.remove("show");
+      }
+    }
+    if (!ok) {
+      // 汇总提示 + 滚动聚焦到第一个出错项，避免用户以为“点了没反应”
+      showAuthMsg("请检查标红的输入项后再提交", true);
+      var target = firstBad ? $(firstBad) : null;
+      if (target) {
+        try { target.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+        try { target.focus({ preventScroll: true }); } catch (_) {}
       }
     }
     return ok;
@@ -163,12 +188,17 @@
       body: JSON.stringify(payload)
     })
       .then(function (resp) {
-        return resp.json().then(function (data) { return { ok: resp.ok, data: data }; });
+        // 先读文本再解析：兼容非 JSON 响应（如 404 返回的 HTML 页面），
+        // 避免 resp.json() 直接抛错掩盖真实失败原因。
+        return resp.text().then(function (txt) {
+          var data = null;
+          try { data = JSON.parse(txt); } catch (_) { data = null; }
+          return { ok: resp.ok, status: resp.status, data: data };
+        });
       })
       .then(function (res) {
         if (!res.ok) {
-          // 后端校验/业务错误：优先展示 detail 文案
-          throw new Error((res.data && (res.data.detail || res.data.message)) || "请求失败，请稍后重试");
+          throw new Error(extractError(res, endpoint));
         }
         // 真实鉴权成功：保存 Token 与用户名，跳转控制台
         try {
@@ -182,7 +212,12 @@
         setTimeout(function () { window.location.href = "/ui/"; }, 1100);
       })
       .catch(function (err) {
-        showAuthMsg(err.message || "网络异常，请稍后重试", true);
+        var msg = (err && err.message) ? err.message : "";
+        // fetch 自身失败（服务未启动 / 网络不可达 / 被中断）时给出可操作的提示
+        if (!msg || (err && err.name === "TypeError")) {
+          msg = "无法连接鉴权接口（" + endpoint + "），请确认 data-agent 服务已启动。";
+        }
+        showAuthMsg(msg, true);
       })
       .finally(function () {
         btn.classList.remove("loading");
@@ -191,6 +226,32 @@
         if (spinner.parentNode) spinner.remove();
       });
   });
+
+  // 从后端响应中提取可读错误文案：
+  // - 兼容 FastAPI 422 的 detail 数组（校验错误）
+  // - 兼容 404（接口不存在，常见于服务未更新）与纯文本响应
+  function extractError(res, endpoint) {
+    var d = res.data;
+    if (d) {
+      if (typeof d.detail === "string" && d.detail) return d.detail;
+      if (Object.prototype.toString.call(d.detail) === "[object Array]" && d.detail.length) {
+        return d.detail.map(function (it) {
+          return (it && (it.msg || it.message)) ? (it.msg || it.message) : String(it);
+        }).join("；");
+      }
+      if (typeof d.message === "string" && d.message) return d.message;
+    }
+    if (res.status === 404) {
+      return "接口不存在（HTTP 404：" + endpoint + "）。请确认已启动最新版 data-agent 服务后重试。";
+    }
+    if (res.status === 409) {
+      return "用户名或邮箱已被注册，请更换后重试，或直接前往登录。";
+    }
+    if (res.status === 429) {
+      return "操作过于频繁，请稍后再试。";
+    }
+    return "请求失败（HTTP " + res.status + "），请稍后重试。";
+  }
 
   // 结果提示：成功（蓝）/ 失败（红）共用 #authSuccess 容器
   function showAuthMsg(text, isError) {

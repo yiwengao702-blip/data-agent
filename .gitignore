@@ -22,6 +22,7 @@ data/
 
 # ===== WorkBuddy 内部目录（工具数据，非源码） =====
 .workbuddy/
+.playwright-cli/
 
 # ===== 环境变量 / 密钥 =====
 .env

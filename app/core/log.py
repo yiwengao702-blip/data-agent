@@ -63,6 +63,16 @@ if app_config.logging.file.enable:
         retention=app_config.logging.file.retention,  # 日志文件保留时长
         encoding="utf-8"  # 日志文件编码格式
     )
+    # 审计日志：独立的 audit.log，仅接收 extra 中 audit=True 的记录（按 request_id 关联）
+    logger.add(
+        sink=path / "audit.log",
+        level="INFO",
+        format=log_format,
+        filter=lambda record: record["extra"].get("audit") is True,
+        rotation=app_config.logging.file.rotation,
+        retention=app_config.logging.file.retention,
+        encoding="utf-8",
+    )
 if __name__ == '__main__':
     async def graph(request: str):
         # 获取ID值

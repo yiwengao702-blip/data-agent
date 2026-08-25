@@ -11,6 +11,65 @@ from typing import Dict, Tuple
 
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
+from app.core.audit import log_api_access
+from app.core.security import decode_access_token
+
+
+# 仅审计以该前缀开头的接口路径（业务 API），静态资源 /ui/* 等不计入审计
+_AUDIT_PATH_PREFIXES = ("/api/",)
+
+
+class AuditMiddleware:
+    """接口级审计中间件：记录每一次 API 调用的方法 / 路径 / 状态码 / 耗时 / 客户端 IP / 操作用户。
+
+    仅对 /api/* 路径审计，避免把静态资源访问写入审计日志。按客户端 IP 与 Bearer Token
+    解析出的用户身份记录，对 SSE 流式接口安全无副作用（仅读取响应状态码，不触碰响应体）。
+    """
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    @staticmethod
+    def _client_ip(scope: Scope) -> str:
+        client = scope.get("client")
+        return client[0] if client else "unknown"
+
+    @staticmethod
+    def _user_from_scope(scope: Scope) -> str | None:
+        headers = dict(scope.get("headers", []))
+        auth = headers.get(b"authorization", b"").decode("latin-1", "ignore")
+        if auth.startswith("Bearer "):
+            return decode_access_token(auth[7:])
+        return None
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        path = scope.get("path", "")
+        # 非 API 路径（如 /ui/ 静态资源）不审计，直接放行
+        if not any(path.startswith(p) for p in _AUDIT_PATH_PREFIXES):
+            await self.app(scope, receive, send)
+            return
+
+        method = scope.get("method", "")
+        client_ip = self._client_ip(scope)
+        user = self._user_from_scope(scope)
+        start = time.time()
+        status_code = 500  # 兜底：若响应异常未完成，记为 500
+
+        async def wrapper(message: Message) -> None:
+            nonlocal status_code
+            if message["type"] == "http.response.start":
+                status_code = message.get("status", 500)
+            await send(message)
+
+        try:
+            await self.app(scope, receive, wrapper)
+        finally:
+            duration_ms = round((time.time() - start) * 1000, 1)
+            log_api_access(method, path, status_code, duration_ms, client_ip, user)
+
 
 class SecurityHeadersMiddleware:
     """为 HTTP 响应补充基础安全头（点击劫持防护 / MIME 嗅探防护 /  referrer 策略等）。"""

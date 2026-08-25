@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>登录 · data-agent 智能问数平台</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="auth.css" />
+  <!-- 资源带版本号，避免浏览器缓存旧版 JS/CSS 导致页面行为异常 -->
+  <link rel="stylesheet" href="styles.css?v=20261013d" />
+  <link rel="stylesheet" href="auth.css?v=20261013d" />
 </head>
 <body class="auth-page">
   <div class="auth-wrap">
@@ -49,11 +50,12 @@
 
         <div class="auth-success" id="authSuccess"></div>
 
-        <form class="auth-form" id="authForm" novalidate>
+        <!-- data-auth-page 显式标记页面类型，供 auth.js 稳定识别登录页 -->
+        <form class="auth-form" id="authForm" data-auth-page="login" novalidate>
           <div class="field">
             <label for="username">用户名 / 邮箱</label>
             <input class="auth-input" id="username" name="username" type="text"
-                   autocomplete="username" placeholder="请输入用户名或邮箱" />
+                   autocomplete="username" placeholder="请输入用户名" />
             <div class="field-error" data-for="username"></div>
           </div>
 
@@ -83,6 +85,6 @@
     </main>
   </div>
 
-  <script src="auth.js"></script>
+  <script src="auth.js?v=20261013d"></script>
 </body>
 </html>

@@ -3,143 +3,531 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>data-agent · 智能问数平台</title>
+  <title>DataAgent · 智能问数平台</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- 顶栏：品牌 + 健康状态 -->
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark">DA</span>
-      <div class="brand-text">
-        <h1>data-agent 智能问数平台</h1>
-        <p>基于 LangGraph + 元知识库的自然语言问数服务</p>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <!-- 数字人助手占位：后续可替换为真实数字人组件（如 avatarsdk / 视频数字人） -->
-      <div class="assistant" id="assistant" title="AI 问数助手（数字人占位）">
-        <span class="assistant-avatar">AI</span>
-        <span class="assistant-text">问数助手</span>
-      </div>
-      <div class="health" id="health" title="点击刷新依赖健康状态">
-        <span class="health-dot" id="healthDot"></span>
-        <span class="health-label" id="healthLabel">检测中…</span>
-      </div>
-    </div>
-  </header>
+  <div class="app-shell">
 
-  <!-- 后端未就绪提示（默认折叠：仅顶部健康药丸标黄时显示一行摘要，点击展开完整指引，减少视觉占用） -->
-  <div class="backend-warn" id="backendWarn" hidden>
-    <details class="bw-details">
-      <summary class="bw-summary">
-        <span class="bw-icon">!</span>
-        <span class="bw-summary-text">部分后端依赖未就绪，问数将失败</span>
-      </summary>
-      <div class="bw-body">
-        部分后端依赖未就绪（LLM / MySQL / Qdrant / ES / Embedding）。问数将失败，请先
-        <code>cd docker &amp;&amp; docker compose up -d</code> 启动依赖；或点「演示」预览界面。
-      </div>
-    </details>
-  </div>
-
-  <main class="layout">
-    <!-- 左侧：问数输入 -->
-    <section class="panel query-panel">
-      <div class="panel-head">
-        <h2>提出你的问题</h2>
-        <span class="panel-sub">用自然语言描述，系统自动生成并执行 SQL</span>
-      </div>
-
-      <textarea id="queryInput" class="query-input"
-        placeholder="例如：统计 2025 年各地区的销售总额，按金额降序排列"
-        rows="4"></textarea>
-
-      <div class="examples" id="examples">
-        <span class="examples-title">试试这些：</span>
-        <button class="chip" data-q="统计2025年各地区销售总额">统计各地区销售总额</button>
-        <button class="chip" data-q="查询销售额最高的前10个省份">销售额 Top10 省份</button>
-        <button class="chip" data-q="2025年每个月的订单量趋势">按月订单量趋势</button>
-      </div>
-
-      <div class="examples" id="historyBox" hidden>
-        <span class="examples-title">历史提问：</span>
-        <span class="chip-row" id="historyChips"></span>
-      </div>
-
-      <div class="actions">
-        <button id="runBtn" class="btn btn-primary">开始问数</button>
-        <button id="stopBtn" class="btn btn-stop" disabled>停止</button>
-        <button id="demoBtn" class="btn btn-ghost" title="无需后端依赖，本地模拟一次完整流式过程">演示（模拟流式）</button>
-        <button id="clearBtn" class="btn btn-link">清空</button>
-      </div>
-      <p class="hint" id="reqHint"></p>
-    </section>
-
-    <!-- 右侧：流式结果 -->
-    <section class="panel result-panel">
-      <div class="panel-head">
-        <h2>执行过程</h2>
-        <span class="panel-sub" id="phaseTag">等待提问…</span>
-      </div>
-
-      <!-- 阶段时间线 -->
-      <ol class="timeline" id="timeline"></ol>
-
-      <!-- 运行信息条：耗时 / 行数 -->
-      <div class="runbar" id="runbar" hidden>
-        <span id="elapsed">耗时 0.0s</span>
-        <span id="rowCount"></span>
-      </div>
-
-      <!-- SQL 面板 -->
-      <div class="block" id="sqlBlock" hidden>
-        <div class="block-title">
-          <span class="badge badge-sql">SQL</span> 生成的查询语句
-          <span class="block-actions"><button class="btn btn-link btn-sm" id="copySql">复制 SQL</button></span>
+    <!-- ============ 左侧导航 ============ -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-mark">DA</span>
+        <div class="brand-text">
+          <strong>DataAgent</strong>
+          <span>茶叶智能问数平台</span>
         </div>
-        <pre class="code"><code id="sqlCode"></code></pre>
       </div>
 
-      <!-- 结果表格 -->
-      <div class="block" id="resultBlock" hidden>
-        <div class="block-title">
-          <span class="badge badge-ok">结果</span> 查询结果
-          <span class="block-actions">
-            <button class="btn btn-link btn-sm" id="exportCsv">导出 CSV</button>
-            <button class="btn btn-link btn-sm" id="exportJson">导出 JSON</button>
-          </span>
-        </div>
-        <div class="table-wrap" id="resultTable"></div>
-      </div>
+      <nav class="nav" id="nav">
+        <a class="nav-item active" data-page="ask">
+          <svg viewBox="0 0 24 24" class="nav-ic"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          <span class="nav-label">茶叶问数</span>
+        </a>
+        <a class="nav-item" data-page="assets">
+          <svg viewBox="0 0 24 24" class="nav-ic"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+          <span class="nav-label">数据资产</span>
+          <span class="nav-tag">Beta</span>
+        </a>
+        <a class="nav-item" data-page="history">
+          <svg viewBox="0 0 24 24" class="nav-ic"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span class="nav-label">查询历史</span>
+        </a>
+        <a class="nav-item" data-page="status">
+          <svg viewBox="0 0 24 24" class="nav-ic"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+          <span class="nav-label">系统状态</span>
+        </a>
+        <a class="nav-item" data-page="rbac">
+          <svg viewBox="0 0 24 24" class="nav-ic"><path d="M12 3 4 6v6c0 5 3.4 8.5 8 9 4.6-.5 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span class="nav-label">权限管理</span>
+        </a>
+        <a class="nav-item" data-page="help">
+          <svg viewBox="0 0 24 24" class="nav-ic"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .9-1 1.7M12 17h.01"/></svg>
+          <span class="nav-label">帮助中心</span>
+        </a>
+      </nav>
 
-      <!-- 错误提示（冷峻商务风：白底卡片 + 左侧中性细条 + 图标 + 一句话结论 + 复制 + 可折叠技术详情） -->
-      <div class="alert" id="errorAlert" hidden>
-        <span class="alert-icon">!</span>
-        <div class="alert-main">
-          <div class="alert-head">
-            <div class="alert-title" id="errorTitle">执行失败</div>
-            <button class="btn-copy" id="copyError" type="button" title="复制错误信息（便于反馈）">复制</button>
+      <div class="sidebar-foot">
+        <div class="env-badge"><span class="env-dot"></span>生产环境 · v0.1.0</div>
+      </div>
+    </aside>
+
+    <!-- ============ 主区 ============ -->
+    <div class="main">
+
+      <!-- 顶栏 -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="crumb">
+            <span>数据智能</span><span class="sep">/</span><span class="cur" id="pageTitle">智能问数</span>
           </div>
-          <div class="alert-msg" id="errorMsg"></div>
-          <details class="alert-detail" id="errorDetail" hidden>
-            <summary>查看技术详情</summary>
-            <pre id="errorBody"></pre>
-          </details>
+          <div class="health" id="health" title="点击刷新依赖健康状态">
+            <span class="health-dot" id="healthDot"></span>
+            <span class="health-label" id="healthLabel">检测中…</span>
+          </div>
+          <div class="assistant" id="assistant" title="AI 问数助手（数字人占位）">
+            <span class="assistant-avatar">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="5" width="14" height="12" rx="3"></rect>
+                <circle cx="9" cy="10" r="1.2"></circle>
+                <circle cx="15" cy="10" r="1.2"></circle>
+                <path d="M9 13.5c1.5 1 3 0 3 0"></path>
+                <line x1="12" y1="17" x2="12" y2="20"></line>
+                <path d="M8 20h8"></path>
+              </svg>
+            </span>
+            <span class="assistant-text">AI 助手</span>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <footer class="footer">
-    <span>data-agent · 问数服务前端</span>
-    <span class="footer-auth" id="footerAuth">
-      <a class="link" href="/ui/login.html">登录</a>
-      <span class="sep">·</span>
-      <a class="link" href="/ui/register.html">注册</a>
-    </span>
-    <span class="footer-right">接口：<code>POST /api/query</code> · 探活：<code>GET /api/health</code></span>
-  </footer>
+        <div class="top-actions">
+          <div class="global-search">
+            <svg viewBox="0 0 24 24" class="search-ic"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="globalSearch" placeholder="搜索表 / 字段 / 历史问题" />
+          </div>
+
+          <button class="icon-btn" id="bellBtn" title="通知">
+            <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+            <span class="bell-dot"></span>
+          </button>
+
+          <!-- 用户菜单 -->
+          <div class="user-menu" id="userMenu">
+            <button class="user-trigger" id="userTrigger" aria-haspopup="true">
+              <span class="avatar" id="userAvatar">U</span>
+              <span class="user-name" id="userName">未登录</span>
+              <svg viewBox="0 0 24 24" class="caret"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="dropdown" id="userDropdown" hidden>
+              <div class="dd-head">
+                <span class="avatar lg" id="ddAvatar">U</span>
+                <div class="dd-id">
+                  <strong id="ddName">访客</strong>
+                  <span id="ddEmail"></span>
+                </div>
+              </div>
+              <a class="dd-item" href="/ui/login.html">个人中心</a>
+              <a class="dd-item" href="/ui/login.html">账号设置</a>
+              <div class="dd-divider"></div>
+              <a class="dd-item danger" id="logoutLink" href="#">退出登录</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 内容区 -->
+      <main class="content">
+
+        <!-- ===== 智能问数页 ===== -->
+        <section class="page" data-page="ask">
+          <div class="page-head">
+              <div class="page-titles">
+              <h1>茶叶智能问数</h1>
+              <p>基于 LangGraph + 元知识库，用自然语言分析茶叶销售数据</p>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn-ghost" id="refreshBtn">刷新依赖状态</button>
+            </div>
+          </div>
+
+          <!-- KPI 指标卡 -->
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-ic ok"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 5-6"/></svg></div>
+              <div class="stat-body"><div class="stat-val" id="statQueries">--</div><div class="stat-label">历史提问数</div></div>
+              <div class="stat-trend up">实时</div>
+            </div>
+            <div class="stat">
+              <div class="stat-ic blue"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+              <div class="stat-body"><div class="stat-val" id="statLatency">--</div><div class="stat-label">平均耗时</div></div>
+              <div class="stat-trend">秒</div>
+            </div>
+            <div class="stat">
+              <div class="stat-ic gold"><svg viewBox="0 0 24 24"><path d="m12 2 3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7l3-7z"/></svg></div>
+              <div class="stat-body"><div class="stat-val" id="statSuccess">98.6%</div><div class="stat-label">查询成功率</div></div>
+              <div class="stat-trend up">↑ 0.4%</div>
+            </div>
+            <div class="stat">
+              <div class="stat-ic navy"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg></div>
+              <div class="stat-body"><div class="stat-val" id="statDeps">--</div><div class="stat-label">在线数据源</div></div>
+              <div class="stat-trend" id="statDepsTrend">依赖</div>
+            </div>
+          </div>
+
+          <!-- 后端未就绪提示（默认折叠） -->
+          <div class="backend-warn" id="backendWarn" hidden>
+            <details class="bw-details">
+              <summary class="bw-summary">
+                <span class="bw-icon">!</span>
+                <span class="bw-summary-text">部分后端依赖未就绪，问数将失败</span>
+              </summary>
+              <div class="bw-body">
+                部分后端依赖未就绪（LLM / MySQL / Qdrant / ES / Embedding）。问数将失败，请先
+                <code>cd docker &amp;&amp; docker compose up -d</code> 启动依赖；或点「演示」预览界面。
+              </div>
+            </details>
+          </div>
+
+          <div class="layout">
+            <!-- 左侧：问数输入 -->
+            <section class="panel query-panel">
+              <div class="panel-head">
+                <h2>提出你的问题</h2>
+                <span class="panel-sub">描述你的茶叶销售问题，系统自动生成并执行 SQL</span>
+              </div>
+
+              <textarea id="queryInput" class="query-input"
+                placeholder="例如：统计 2025 年各茶类的销售额，按金额降序排列"
+                rows="4"></textarea>
+
+              <div class="examples" id="examples">
+                <span class="examples-title">试试这些：</span>
+                <button class="chip" data-q="统计2025年各茶类销售额">各茶类销售额</button>
+                <button class="chip" data-q="查询销量最高的前10款茶叶">销量 Top10 茶品</button>
+                <button class="chip" data-q="2025年每个月的茶叶订单量趋势">按月订单趋势</button>
+              </div>
+
+              <div class="examples" id="historyBox" hidden>
+                <span class="examples-title">历史提问：</span>
+                <span class="chip-row" id="historyChips"></span>
+              </div>
+
+              <div class="actions">
+                <button id="runBtn" class="btn btn-primary">开始问数</button>
+                <button id="stopBtn" class="btn btn-stop" disabled>停止</button>
+                <button id="demoBtn" class="btn btn-ghost" title="无需后端依赖，本地模拟一次完整流式过程">演示（模拟流式）</button>
+                <button id="clearBtn" class="btn btn-link">清空</button>
+              </div>
+              <p class="hint" id="reqHint"></p>
+            </section>
+
+            <!-- 右侧：流式结果 -->
+            <section class="panel result-panel">
+              <div class="panel-head">
+                <h2>执行过程</h2>
+                <span class="panel-sub" id="phaseTag">等待提问…</span>
+              </div>
+
+              <!-- 阶段时间线 -->
+              <ol class="timeline" id="timeline"></ol>
+
+              <!-- 运行信息条 -->
+              <div class="runbar" id="runbar" hidden>
+                <span id="elapsed">耗时 0.0s</span>
+                <span id="rowCount"></span>
+              </div>
+
+              <!-- SQL 面板 -->
+              <div class="block" id="sqlBlock" hidden>
+                <div class="block-title">
+                  <span class="badge badge-sql">SQL</span> 生成的查询语句
+                  <span class="block-actions"><button class="btn btn-link btn-sm" id="copySql">复制 SQL</button></span>
+                </div>
+                <pre class="code"><code id="sqlCode"></code></pre>
+              </div>
+
+              <!-- 结果表格 -->
+              <div class="block" id="resultBlock" hidden>
+                <div class="block-title">
+                  <span class="badge badge-ok">结果</span> 查询结果
+                  <span class="block-actions">
+                    <button class="btn btn-link btn-sm" id="exportCsv">导出 CSV</button>
+                    <button class="btn btn-link btn-sm" id="exportJson">导出 JSON</button>
+                  </span>
+                </div>
+                <div class="table-wrap" id="resultTable"></div>
+              </div>
+
+              <!-- 错误提示 -->
+              <div class="alert" id="errorAlert" hidden>
+                <span class="alert-icon"></span>
+                <div class="alert-main">
+                  <div class="alert-head">
+                    <div class="alert-title" id="errorTitle">执行失败</div>
+                    <button class="btn-copy" id="copyError" type="button" title="复制错误信息（便于反馈）">复制</button>
+                  </div>
+                  <div class="alert-msg" id="errorMsg"></div>
+                  <details class="alert-detail" id="errorDetail" hidden>
+                    <summary>查看技术详情</summary>
+                    <pre id="errorBody"></pre>
+                  </details>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <!-- ===== 其他模块占位页 ===== -->
+        <section class="page" data-page="assets" hidden>
+          <div class="page-head">
+            <div class="page-titles">
+              <h1>数据资产</h1>
+              <p>茶类目录、字段与指标元数据（元知识库）</p>
+            </div>
+            <div class="page-actions">
+              <span class="env-badge" style="background:#eef2f8;color:var(--text-2);border:none;">共 8 个茶类 · 42 个字段</span>
+            </div>
+          </div>
+
+          <!-- 子页签：茶类目录 / 字段 / 指标口径 -->
+          <div class="tabs" id="assetTabs">
+            <button class="tab active" data-tab="catalog">茶类目录</button>
+            <button class="tab" data-tab="fields">字段</button>
+            <button class="tab" data-tab="metrics">指标口径</button>
+          </div>
+
+          <!-- 茶类目录 -->
+          <div class="tab-panel" data-tab="catalog">
+            <div class="panel">
+              <div class="panel-head">
+                <h2>茶类目录</h2>
+                <span class="panel-sub">基于元知识库同步的茶叶维度</span>
+              </div>
+              <div class="table-wrap">
+                <table class="result">
+                  <thead>
+                    <tr><th>茶类</th><th>发酵类型</th><th>代表产区</th><th>年度销售额（示例）</th><th>数据状态</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>绿茶</td><td>不发酵</td><td>浙江·西湖</td><td class="cell-num">1,234,500</td><td><span class="badge badge-ok">已接入</span></td></tr>
+                    <tr><td>红茶</td><td>全发酵</td><td>安徽·祁门</td><td class="cell-num">1,183,200</td><td><span class="badge badge-ok">已接入</span></td></tr>
+                    <tr><td>乌龙茶</td><td>半发酵</td><td>福建·安溪</td><td class="cell-num">982,100</td><td><span class="badge badge-ok">已接入</span></td></tr>
+                    <tr><td>白茶</td><td>微发酵</td><td>福建·福鼎</td><td class="cell-num">651,800</td><td><span class="badge badge-ok">已接入</span></td></tr>
+                    <tr><td>黑茶</td><td>后发酵</td><td>湖南·安化</td><td class="cell-num">523,400</td><td><span class="badge badge-ok">已接入</span></td></tr>
+                    <tr><td>普洱</td><td>后发酵</td><td>云南·西双版纳</td><td class="cell-num">768,900</td><td><span class="badge badge-pending">待接入</span></td></tr>
+                    <tr><td>黄茶</td><td>闷黄</td><td>湖南·君山</td><td class="cell-num">287,600</td><td><span class="badge badge-pending">待接入</span></td></tr>
+                    <tr><td>花茶</td><td>再加工</td><td>福建·福州</td><td class="cell-num">412,300</td><td><span class="badge badge-ok">已接入</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 字段字典 -->
+          <div class="tab-panel" data-tab="fields" hidden>
+            <div class="panel">
+              <div class="panel-head">
+                <h2>字段字典</h2>
+                <span class="panel-sub">来自元知识库同步的事实表与维度表字段</span>
+              </div>
+              <div class="table-wrap">
+                <table class="result">
+                  <thead>
+                    <tr><th>字段名</th><th>类型</th><th>所属表</th><th>描述</th><th>示例</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>order_id</td><td> BIGINT</td><td>fact_order</td><td>订单唯一标识</td><td class="cell-num">10001</td></tr>
+                    <tr><td>order_date</td><td> DATE</td><td>fact_order</td><td>下单日期</td><td>2025-03-12</td></tr>
+                    <tr><td>sales_amount</td><td> DECIMAL</td><td>fact_order</td><td>销售额（元）</td><td class="cell-num">128.50</td></tr>
+                    <tr><td>quantity</td><td> INT</td><td>fact_order</td><td>销量（件）</td><td class="cell-num">3</td></tr>
+                    <tr><td>unit_price</td><td> DECIMAL</td><td>fact_order</td><td>单价（元）</td><td class="cell-num">42.80</td></tr>
+                    <tr><td>channel</td><td> VARCHAR</td><td>dim_channel</td><td>销售渠道</td><td>电商</td></tr>
+                    <tr><td>tea_category</td><td> VARCHAR</td><td>dim_tea</td><td>茶类（维度）</td><td>绿茶</td></tr>
+                    <tr><td>fermentation_type</td><td> VARCHAR</td><td>dim_tea</td><td>发酵类型</td><td>不发酵</td></tr>
+                    <tr><td>origin</td><td> VARCHAR</td><td>dim_tea</td><td>代表产区</td><td>浙江·西湖</td></tr>
+                    <tr><td>region</td><td> VARCHAR</td><td>dim_region</td><td>销售区域</td><td>华东</td></tr>
+                    <tr><td>customer_id</td><td> BIGINT</td><td>dim_customer</td><td>客户 ID</td><td class="cell-num">20023</td></tr>
+                    <tr><td>stock_qty</td><td> INT</td><td>fact_tea_stock</td><td>库存（件）</td><td class="cell-num">1200</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 指标口径 -->
+          <div class="tab-panel" data-tab="metrics" hidden>
+            <div class="panel">
+              <div class="panel-head">
+                <h2>指标口径</h2>
+                <span class="panel-sub">统一指标定义，确保问数口径一致</span>
+              </div>
+              <div class="table-wrap">
+                <table class="result">
+                  <thead>
+                    <tr><th>指标名称</th><th>口径定义</th><th>计算口径（SQL 片段）</th><th>单位</th><th>负责组</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>销售额</td><td>已支付订单销售金额合计</td><td>SUM(sales_amount)</td><td>元</td><td>数据组</td></tr>
+                    <tr><td>销量</td><td>已支付订单商品件数合计</td><td>SUM(quantity)</td><td>件</td><td>数据组</td></tr>
+                    <tr><td>客单价</td><td>销售额 / 订单数</td><td>SUM(sales_amount)/COUNT(DISTINCT order_id)</td><td>元/单</td><td>分析组</td></tr>
+                    <tr><td>销售额环比</td><td>（本期 - 上期）/ 上期</td><td>(x - lag(x)) / lag(x)</td><td>%</td><td>分析组</td></tr>
+                    <tr><td>同比增长</td><td>（本期 - 去年同期）/ 去年同期</td><td>(x - yoy(x)) / yoy(x)</td><td>%</td><td>分析组</td></tr>
+                    <tr><td>复购率</td><td>复购客户数 / 总客户数</td><td>COUNT(repurchase) / COUNT(cust)</td><td>%</td><td>分析组</td></tr>
+                    <tr><td>毛利率</td><td>（销售额 - 成本）/ 销售额</td><td>(sales - cost) / sales</td><td>%</td><td>财务组</td></tr>
+                    <tr><td>动销率</td><td>有销售 SKU 数 / 总 SKU 数</td><td>COUNT(active_sku) / COUNT(sku)</td><td>%</td><td>数据组</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="page" data-page="history" hidden>
+          <div class="page-head">
+            <div class="page-titles">
+              <h1>查询历史</h1>
+              <p>本地保存的最近提问记录，点击可重新问数</p>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn-ghost" id="clearHistoryBtn">清空历史</button>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="hist-list" id="historyList"></div>
+          </div>
+        </section>
+        <section class="page" data-page="status" hidden>
+          <div class="page-head">
+            <div class="page-titles">
+              <h1>系统状态</h1>
+              <p>实时探活各下游依赖（LLM / MySQL / Qdrant / ES / Embedding）</p>
+            </div>
+            <div class="page-actions">
+              <button class="btn btn-ghost" id="statusRefresh">刷新状态</button>
+            </div>
+          </div>
+
+          <div class="status-summary" id="statusSummary">
+            <div class="ss-ic" id="ssIc"></div>
+            <div class="ss-body">
+              <div class="ss-title" id="ssTitle">检测中…</div>
+              <div class="ss-sub" id="ssSub">正在探活下游依赖</div>
+            </div>
+            <div class="ss-time" id="ssTime"></div>
+          </div>
+
+          <div class="dep-list" id="depList"></div>
+        </section>
+        <section class="page" data-page="rbac" hidden>
+          <div class="page-head">
+            <div class="page-titles">
+              <h1>权限管理</h1>
+              <p>基于角色的访问控制（RBAC）配置</p>
+            </div>
+            <div class="page-actions">
+              <span class="env-badge" style="background:#eef2f8;color:var(--text-2);border:none;">共 4 个角色 · 61 个用户</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>角色列表</h2>
+              <span class="panel-sub">角色决定可访问的数据范围与操作权限</span>
+            </div>
+            <div class="table-wrap">
+              <table class="result">
+                <thead>
+                  <tr><th>角色</th><th>描述</th><th>数据权限范围</th><th>用户数</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><span class="badge badge-sql">平台管理员</span></td><td>系统配置、用户与权限管理</td><td>全部数据</td><td class="cell-num">2</td></tr>
+                  <tr><td><span class="badge badge-ok">数据分析师</span></td><td>创建问数、查看所有报表</td><td>全部数据</td><td class="cell-num">8</td></tr>
+                  <tr><td><span class="badge badge-ok">业务负责人</span></td><td>查看所辖业务线报表</td><td>指定业务线</td><td class="cell-num">15</td></tr>
+                  <tr><td><span class="badge badge-pending">只读访客</span></td><td>仅查看公开看板</td><td>公开看板</td><td class="cell-num">36</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:20px;">
+            <div class="panel-head">
+              <h2>用户列表</h2>
+              <span class="panel-sub">最近登录时间由认证服务同步</span>
+            </div>
+            <div class="table-wrap">
+              <table class="result">
+                <thead>
+                  <tr><th>用户名</th><th>姓名</th><th>角色</th><th>状态</th><th>最近登录</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>zhangwei</td><td>张伟</td><td>平台管理员</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-12 09:24</td></tr>
+                  <tr><td>lina</td><td>李娜</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-13 14:02</td></tr>
+                  <tr><td>wangfang</td><td>王芳</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-11 18:40</td></tr>
+                  <tr><td>chenjie</td><td>陈杰</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-10 11:15</td></tr>
+                  <tr><td>liuyang</td><td>刘洋</td><td>只读访客</td><td><span class="badge badge-pending">停用</span></td><td>2025-09-28 16:33</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-page="help" hidden>
+          <div class="page-head">
+            <div class="page-titles">
+              <h1>帮助中心</h1>
+              <p>快速上手与常见问题</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2>快速上手</h2>
+              <span class="panel-sub">四步开始使用茶叶智能问数</span>
+            </div>
+            <ol class="steps">
+              <li class="step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                  <strong>登录账户</strong>
+                  <span>使用平台管理员或数据分析师账号登录系统。</span>
+                </div>
+              </li>
+              <li class="step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                  <strong>描述问题</strong>
+                  <span>进入「茶叶问数」，用自然语言描述你的茶叶销售问题。</span>
+                </div>
+              </li>
+              <li class="step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                  <strong>查看结果</strong>
+                  <span>系统自动生成 SQL 并执行，右侧实时展示执行过程与结果表格。</span>
+                </div>
+              </li>
+              <li class="step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                  <strong>导出与复盘</strong>
+                  <span>将结果导出为 CSV / JSON，或在「查询历史」中一键重新提问。</span>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="panel" style="margin-top:20px;">
+            <div class="panel-head">
+              <h2>常见问题</h2>
+              <span class="panel-sub">点击展开查看解答</span>
+            </div>
+            <div class="faq">
+              <details class="faq-item">
+                <summary>问数支持哪些问题？<span class="faq-caret"></span></summary>
+                <div class="faq-body">支持对茶叶销售额、销量、订单趋势、茶类对比等结构化分析问题。系统基于元知识库自动召回相关表与字段，生成可执行的 SQL。复杂多表关联与口径类问题建议描述清楚时间范围与口径。</div>
+              </details>
+              <details class="faq-item">
+                <summary>数据安全与权限如何保障？<span class="faq-caret"></span></summary>
+                <div class="faq-body">平台采用 RBAC 角色访问控制，接口层强制鉴权（JWT），不同角色可访问的数据范围不同。所有问数请求均记录审计日志，便于溯源。</div>
+              </details>
+              <details class="faq-item">
+                <summary>后端依赖未就绪怎么办？<span class="faq-caret"></span></summary>
+                <div class="faq-body">在「系统状态」页可查看各依赖健康度。若显示异常，请先执行 <code>cd docker &amp;&amp; docker compose up -d</code> 启动依赖服务；或点击问数页的「演示」，无需后端即可预览界面。</div>
+              </details>
+              <details class="faq-item">
+                <summary>如何导出查询结果？<span class="faq-caret"></span></summary>
+                <div class="faq-body">问数完成后，在「执行过程」面板的「查询结果」区块点击「导出 CSV」或「导出 JSON」即可下载。导出文件以 BOM 编码保存，Excel 打开中文不乱码。</div>
+              </details>
+              <details class="faq-item">
+                <summary>忘记密码怎么办？<span class="faq-caret"></span></summary>
+                <div class="faq-body">请联系平台管理员（平台管理员角色）在「权限管理 - 用户列表」中重置密码。后续版本将上线自助找回密码能力。</div>
+              </details>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

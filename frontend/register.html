@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>注册 · data-agent 智能问数平台</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="auth.css" />
+  <!-- 资源带版本号，避免浏览器缓存旧版 JS/CSS 导致页面行为异常 -->
+  <link rel="stylesheet" href="styles.css?v=20261013d" />
+  <link rel="stylesheet" href="auth.css?v=20261013d" />
 </head>
 <body class="auth-page">
   <div class="auth-wrap">
@@ -48,11 +49,12 @@
 
         <div class="auth-success" id="authSuccess"></div>
 
-        <form class="auth-form" id="authForm" novalidate>
+        <!-- data-auth-page 显式标记页面类型，供 auth.js 稳定识别注册页 -->
+        <form class="auth-form" id="authForm" data-auth-page="register" novalidate>
           <div class="field">
             <label for="username">用户名</label>
             <input class="auth-input" id="username" name="username" type="text"
-                   autocomplete="username" placeholder="3-20 位字母、数字或下划线" />
+                   autocomplete="username" placeholder="3-32 位字母、数字或下划线" />
             <div class="field-error" data-for="username"></div>
           </div>
 
@@ -67,11 +69,11 @@
             <label for="password">密码</label>
             <div class="input-wrap">
               <input class="auth-input" id="password" name="password" type="password"
-                     autocomplete="new-password" placeholder="至少 8 位，含字母与数字" />
+                     autocomplete="new-password" placeholder="至少 6 位，建议含字母与数字" />
               <button type="button" class="pw-toggle" data-target="password" aria-label="显示密码">👁</button>
             </div>
             <div class="field-error" data-for="password"></div>
-            <div class="field-hint">建议 8 位以上，包含字母与数字组合</div>
+            <div class="field-hint">至少 6 位；建议 8 位以上并包含字母与数字</div>
           </div>
 
           <div class="field">
@@ -88,6 +90,7 @@
             <label class="checkbox">
               <input type="checkbox" id="agree" />
               我已阅读并同意<a class="link" href="#" id="termsLink" style="margin-left:4px;">服务条款</a>
+              <span style="color:#d64545;">*</span>
             </label>
           </div>
 
@@ -102,6 +105,6 @@
     </main>
   </div>
 
-  <script src="auth.js"></script>
+  <script src="auth.js?v=20261013d"></script>
 </body>
 </html>

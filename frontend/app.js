@@ -55,6 +55,33 @@ const backendWarn = $("backendWarn");
 const historyBox = $("historyBox");
 const historyChips = $("historyChips");
 
+// 企业外壳相关 DOM 引用
+const userTrigger = $("userTrigger");
+const userDropdown = $("userDropdown");
+const userAvatar = $("userAvatar");
+const userName = $("userName");
+const ddAvatar = $("ddAvatar");
+const ddName = $("ddName");
+const ddEmail = $("ddEmail");
+const logoutLink = $("logoutLink");
+const navEl = $("nav");
+const pageTitle = $("pageTitle");
+const statQueries = $("statQueries");
+const statLatency = $("statLatency");
+const statDeps = $("statDeps");
+const statDepsTrend = $("statDepsTrend");
+const refreshBtn = $("refreshBtn");
+
+// 系统状态页 / 查询历史页 DOM 引用
+const statusRefresh = $("statusRefresh");
+const ssIc = $("ssIc");
+const ssTitle = $("ssTitle");
+const ssSub = $("ssSub");
+const ssTime = $("ssTime");
+const depList = $("depList");
+const historyList = $("historyList");
+const clearHistoryBtn = $("clearHistoryBtn");
+
 // 运行状态
 let running = false;
 let finished = false;
@@ -87,29 +114,184 @@ function escapeHtml(s) {
   }[c]));
 }
 
-function renderAuthState() {
-  const box = $("footerAuth");
-  if (!box) return;
+/* ---------------- 用户菜单（与真实鉴权后端联动） ---------------- */
+function renderUserMenu() {
   const s = getSession();
-  if (s && s.token && s.user) {
-    box.innerHTML =
-      '<span class="auth-user">你好，' + escapeHtml(s.user) + "</span>" +
-      '<span class="sep">·</span>' +
-      '<a class="link" href="#" id="logoutLink">退出</a>';
-    const lo = $("logoutLink");
-    if (lo) {
-      lo.addEventListener("click", (e) => {
-        e.preventDefault();
-        try { localStorage.removeItem("da_session"); } catch (_) {}
-        renderAuthState();
-      });
-    }
-  } else {
-    box.innerHTML =
-      '<a class="link" href="/ui/login.html">登录</a>' +
-      '<span class="sep">·</span>' +
-      '<a class="link" href="/ui/register.html">注册</a>';
+  const initial = s && s.user ? s.user.slice(0, 1).toUpperCase() : "U";
+  [userAvatar, ddAvatar].forEach((el) => { if (el) el.textContent = initial; });
+  if (userName) userName.textContent = s && s.user ? s.user : "未登录";
+  if (ddName) ddName.textContent = s && s.user ? s.user : "访客";
+  if (ddEmail) ddEmail.textContent = s && s.token ? "已登录用户" : "";
+}
+
+function bindUserMenu() {
+  if (userTrigger && userDropdown) {
+    userTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = userDropdown.hidden;
+      userDropdown.hidden = !open;
+      const menu = $("userMenu");
+      if (menu) menu.classList.toggle("open", !open);
+    });
   }
+  document.addEventListener("click", (e) => {
+    if (userDropdown && !userDropdown.hidden) {
+      const menu = $("userMenu");
+      if (menu && !menu.contains(e.target)) {
+        userDropdown.hidden = true;
+        menu.classList.remove("open");
+      }
+    }
+  });
+  if (logoutLink) {
+    logoutLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      try { localStorage.removeItem("da_session"); } catch (_) {}
+      renderUserMenu();
+      const menu = $("userMenu");
+      if (menu) menu.classList.remove("open");
+      if (userDropdown) userDropdown.hidden = true;
+    });
+  }
+}
+
+/* ---------------- 侧边栏导航切换 ---------------- */
+function bindNav() {
+  if (!navEl) return;
+  navEl.querySelectorAll(".nav-item").forEach((item) => {
+    item.addEventListener("click", () => {
+      const page = item.dataset.page;
+      navEl.querySelectorAll(".nav-item").forEach((n) => n.classList.remove("active"));
+      item.classList.add("active");
+      document.querySelectorAll(".page").forEach((p) => {
+        p.hidden = p.dataset.page !== page;
+      });
+      if (pageTitle) {
+        const label = item.querySelector(".nav-label");
+        pageTitle.textContent = label ? label.textContent : "智能问数";
+      }
+      if (page === "history") renderHistoryPage();
+      if (page === "status") refreshHealth();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
+/* ---------------- 数据资产页 · 子页签切换 ---------------- */
+function bindAssetTabs() {
+  const tabsEl = $("assetTabs");
+  if (!tabsEl) return;
+  const tabs = tabsEl.querySelectorAll(".tab");
+  const panels = document.querySelectorAll('.tab-panel[data-tab]');
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const name = tab.dataset.tab;
+      tabs.forEach((t) => t.classList.toggle("active", t === tab));
+      panels.forEach((p) => {
+        p.hidden = p.dataset.tab !== name;
+      });
+    });
+  });
+}
+
+/* ---------------- KPI 指标卡 ---------------- */
+function updateStats() {
+  if (statQueries) statQueries.textContent = String(loadHistory().length);
+  if (statLatency && serverElapsedMs != null) {
+    statLatency.textContent = (serverElapsedMs / 1000).toFixed(1);
+  }
+}
+
+/* ---------------- 系统状态页 / 查询历史页 ---------------- */
+// 依赖中文名与图标（与 /api/health 返回的 dependencies 键对应）
+const DEP_META = {
+  llm:           { name: "大模型 LLM",         icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' },
+  mysql_meta:    { name: "元数据库 MySQL",     icon: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/>' },
+  mysql_dw:      { name: "业务库 MySQL",       icon: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/>' },
+  qdrant:        { name: "向量库 Qdrant",      icon: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/>' },
+  elasticsearch: { name: "检索引擎 ES",        icon: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>' },
+  embedding:     { name: "向量化 Embedding",   icon: '<path d="M3 12h4l3 8 4-16 3 8h4"/>' },
+};
+
+function svgIcon(inner) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
+}
+
+function renderStatus(h) {
+  if (!h || !ssTitle) return;
+  const overall = h.status;
+  const ok = overall === "ok";
+  const degraded = overall === "degraded";
+  const cls = ok ? "ok" : (degraded ? "warn" : "err");
+  if (ssIc) ssIc.className = "ss-ic " + cls;
+  if (ssIc) ssIc.innerHTML = svgIcon(ok
+    ? '<path d="M20 6 9 17l-5-5"/>'
+    : (degraded ? '<path d="M12 9v4"/><path d="M12 17h.01"/>' : '<path d="M18 6 6 18"/><path d="M6 6l12 12"/>'));
+  if (ssTitle) ssTitle.textContent = ok ? "所有核心依赖正常" : (degraded ? "部分依赖异常（服务降级）" : "系统异常");
+  if (ssSub) {
+    const deps = h.dependencies || {};
+    const bad = Object.keys(deps).filter((k) => deps[k].status !== "ok");
+    ssSub.textContent = ok ? "下游依赖全部连通" : ("异常依赖：" + bad.join("、"));
+  }
+  if (ssTime) {
+    const t = (h.timestamp || "").replace("T", " ").replace(/\+.*$/, "");
+    ssTime.textContent = t ? "更新于 " + t + " UTC" : "";
+  }
+  if (depList) {
+    depList.innerHTML = "";
+    const deps = h.dependencies || {};
+    Object.keys(deps).forEach((key) => {
+      const meta = DEP_META[key] || { name: key, icon: "" };
+      const d = deps[key];
+      const isOk = d.status === "ok";
+      const latency = (d.latency_ms != null) ? d.latency_ms + "ms" : "";
+      const note = d.note || d.detail || (d.model ? "模型 " + d.model : "") || (d.provider ? d.provider : "");
+      const el = document.createElement("div");
+      el.className = "dep";
+      el.innerHTML =
+        '<div class="dep-ic">' + svgIcon(meta.icon) + '</div>' +
+        '<div class="dep-body">' +
+          '<div class="dep-name">' + escapeHtml(meta.name) + '</div>' +
+          '<div class="dep-meta">' + escapeHtml([latency, note].filter(Boolean).join(" · ")) + '</div>' +
+        '</div>' +
+        '<div class="dep-status ' + (isOk ? "ok" : "error") + '">' +
+          '<span class="dep-dot"></span>' + (isOk ? "正常" : "异常") +
+        '</div>';
+      depList.appendChild(el);
+    });
+  }
+}
+
+function renderHistoryPage() {
+  if (!historyList) return;
+  const hist = loadHistory();
+  if (!hist.length) {
+    historyList.innerHTML = '<div class="hist-empty">暂无历史提问记录</div>';
+    return;
+  }
+  historyList.innerHTML = "";
+  hist.forEach((q) => {
+    const el = document.createElement("div");
+    el.className = "hist-item";
+    el.innerHTML =
+      '<div class="hist-icon">' + svgIcon('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>') + '</div>' +
+      '<div class="hist-text" title="' + escapeHtml(q) + '">' + escapeHtml(q) + '</div>' +
+      '<div class="hist-actions"><button class="btn btn-link btn-sm" data-rerun="' + escapeHtml(q) + '">重新提问</button></div>';
+    historyList.appendChild(el);
+  });
+  historyList.querySelectorAll("[data-rerun]").forEach((b) => {
+    b.addEventListener("click", () => {
+      const q = b.getAttribute("data-rerun");
+      switchPage("ask");
+      queryInput.value = q;
+      runQuery(q);
+    });
+  });
+}
+
+function switchPage(page) {
+  const item = navEl && navEl.querySelector('.nav-item[data-page="' + page + '"]');
+  if (item) item.click();
 }
 
 /* ---------------- UI 重置与状态切换 ---------------- */
@@ -332,6 +514,7 @@ function onDone() {
   if (serverElapsedMs != null) {
     elapsedEl.textContent = "耗时 " + (serverElapsedMs / 1000).toFixed(1) + "s";
   }
+  updateStats();
   setRunning(false);
 }
 
@@ -467,11 +650,11 @@ async function runDemo() {
     if (s === "生成SQL") {
       await sleep(320);
       onSql(
-        "SELECT region,\n" +
-          "       SUM(order_amount) AS total_amount\n" +
+        "SELECT tea_category,\n" +
+          "       SUM(sales_amount) AS total_amount\n" +
           "FROM fact_order\n" +
           "WHERE YEAR(order_date) = 2025\n" +
-          "GROUP BY region\n" +
+          "GROUP BY tea_category\n" +
           "ORDER BY total_amount DESC"
       );
     }
@@ -479,10 +662,12 @@ async function runDemo() {
   if (aborted) return;
   await sleep(420);
   onResult([
-    { region: "华北", total_amount: 1234500.0 },
-    { region: "华东", total_amount: 1183200.5 },
-    { region: "华南", total_amount: 982100.0 },
-    { region: "西南", total_amount: 651800.0 },
+    { "茶类": "绿茶", "销售额": 1234500.0 },
+    { "茶类": "红茶", "销售额": 1183200.5 },
+    { "茶类": "乌龙茶", "销售额": 982100.0 },
+    { "茶类": "白茶", "销售额": 651800.0 },
+    { "茶类": "黑茶", "销售额": 523400.0 },
+    { "茶类": "花茶", "销售额": 412300.0 },
   ]);
   await sleep(280);
   finished = true;
@@ -599,6 +784,8 @@ async function refreshHealth() {
       healthOk = true;
       healthEl.classList.add("ok");
       healthLabel.textContent = "服务正常";
+      if (statDeps) statDeps.textContent = Object.keys(h.dependencies || {}).length || "--";
+      if (statDepsTrend) statDepsTrend.textContent = "全部正常";
     } else {
       healthOk = false;
       healthEl.classList.add("warn");
@@ -608,12 +795,27 @@ async function refreshHealth() {
         ? "部分依赖异常：" + bad.join("、")
         : "服务降级";
       backendWarn.hidden = false;
+      if (statDeps) {
+        const okCount = Object.values(deps).filter((d) => d.status === "ok").length;
+        const total = Object.keys(deps).length;
+        statDeps.textContent = total ? (okCount + "/" + total) : "--";
+      }
+      if (statDepsTrend) statDepsTrend.textContent = "部分异常";
     }
+    renderStatus(h);
   } catch (e) {
     healthOk = false;
     healthEl.classList.add("err");
     healthLabel.textContent = (e && e.name === "AbortError") ? "服务响应超时" : "无法连接服务";
     backendWarn.hidden = false;
+    if (statDeps) statDeps.textContent = "--";
+    if (statDepsTrend) statDepsTrend.textContent = "未知";
+    // 同步状态页摘要（探活失败/超时兜底，避免卡在「检测中…」）
+    if (ssIc) { ssIc.className = "ss-ic err"; ssIc.innerHTML = svgIcon('<path d="M18 6 6 18"/><path d="M6 6l12 12"/>'); }
+    if (ssTitle) ssTitle.textContent = "探活失败";
+    if (ssSub) ssSub.textContent = (e && e.name === "AbortError") ? "依赖探活超时（可能下游服务未启动）" : "无法连接健康接口";
+    if (ssTime) ssTime.textContent = "";
+    if (depList) depList.innerHTML = '<div class="hist-empty">暂无可展示的依赖信息</div>';
   }
 }
 
@@ -709,6 +911,18 @@ function bindEvents() {
 
   // 顶栏健康状态点击刷新
   healthEl.addEventListener("click", refreshHealth);
+  // 顶部「刷新依赖状态」
+  if (refreshBtn) refreshBtn.addEventListener("click", refreshHealth);
+  // 系统状态页「刷新状态」
+  if (statusRefresh) statusRefresh.addEventListener("click", refreshHealth);
+  // 查询历史页「清空历史」
+  if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener("click", () => {
+      try { localStorage.removeItem(HISTORY_KEY); } catch (_) {}
+      renderHistory();       // 同步刷新问数页的历史 chips
+      renderHistoryPage();    // 同步刷新历史页列表
+    });
+  }
 
   // Ctrl/Cmd + Enter 提交
   queryInput.addEventListener("keydown", (e) => {
@@ -721,6 +935,11 @@ function bindEvents() {
 /* ---------------- 启动 ---------------- */
 bindEvents();
 renderHistory();
-renderAuthState();
+renderUserMenu();
+bindUserMenu();
+bindNav();
+bindAssetTabs();
+updateStats();
+renderHistoryPage();
 refreshHealth();
 setInterval(refreshHealth, 30000); // 每 30s 自动探活
