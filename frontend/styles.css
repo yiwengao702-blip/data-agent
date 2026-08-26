@@ -358,7 +358,6 @@ body {
 
 /* 阶段时间线 */
 .timeline { list-style: none; margin: 0 0 6px; padding: 4px 0 4px 6px; position: relative; min-height: 56px; }
-.timeline:empty::before { content: "等待提问… 系统将在此展示执行过程、生成 SQL 与查询结果"; position: absolute; left: 0; top: 0; right: 0; padding: 18px 16px; text-align: center; font-size: 13px; color: var(--text-3); background: #f8fafc; border: 1px dashed var(--line); border-radius: 10px; }
 .timeline::before { content: ""; position: absolute; left: 14px; top: 18px; bottom: 14px; width: 2px; background: var(--line); }
 .step { position: relative; display: flex; align-items: center; gap: 12px; padding: 9px 6px; color: var(--text-3); font-size: 13.5px; transition: color .25s; }
 .step .dot { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--line); z-index: 1; flex: 0 0 auto; transition: all .25s; }
