@@ -404,7 +404,7 @@
               <p>基于角色的访问控制（RBAC）配置</p>
             </div>
             <div class="page-actions">
-              <span class="env-badge" style="background:#eef2f8;color:var(--text-2);border:none;">共 4 个角色 · 61 个用户</span>
+              <span class="env-badge" style="background:#eef2f8;color:var(--text-2);border:none;">共 4 个角色 · 25 个用户</span>
             </div>
           </div>
 
@@ -420,9 +420,9 @@
                 </thead>
                 <tbody>
                   <tr><td><span class="badge badge-sql">平台管理员</span></td><td>系统配置、用户与权限管理</td><td>全部数据</td><td class="cell-num">2</td></tr>
-                  <tr><td><span class="badge badge-ok">数据分析师</span></td><td>创建问数、查看所有报表</td><td>全部数据</td><td class="cell-num">8</td></tr>
-                  <tr><td><span class="badge badge-ok">业务负责人</span></td><td>查看所辖业务线报表</td><td>指定业务线</td><td class="cell-num">15</td></tr>
-                  <tr><td><span class="badge badge-pending">只读访客</span></td><td>仅查看公开看板</td><td>公开看板</td><td class="cell-num">36</td></tr>
+                  <tr><td><span class="badge badge-ok">数据分析师</span></td><td>创建问数、查看所有报表</td><td>全部数据</td><td class="cell-num">5</td></tr>
+                  <tr><td><span class="badge badge-ok">业务负责人</span></td><td>查看所辖业务线报表</td><td>指定业务线</td><td class="cell-num">8</td></tr>
+                  <tr><td><span class="badge badge-pending">只读访客</span></td><td>仅查看公开看板</td><td>公开看板</td><td class="cell-num">10</td></tr>
                 </tbody>
               </table>
             </div>
@@ -431,21 +431,72 @@
           <div class="panel" style="margin-top:20px;">
             <div class="panel-head">
               <h2>用户列表</h2>
-              <span class="panel-sub">最近登录时间由认证服务同步</span>
+              <span class="panel-sub">全部用户由认证服务同步，支持按角色、状态筛选</span>
             </div>
+
+            <!-- 工具栏：搜索 / 筛选 / 新增（静态示意） -->
+            <div class="toolbar">
+              <div class="global-search" style="width:240px;">
+                <svg viewBox="0 0 24 24" class="search-ic"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input placeholder="搜索用户名 / 姓名 / 邮箱" />
+              </div>
+              <select class="filter-select" aria-label="角色筛选">
+                <option>全部角色</option>
+                <option>平台管理员</option>
+                <option>数据分析师</option>
+                <option>业务负责人</option>
+                <option>只读访客</option>
+              </select>
+              <select class="filter-select" aria-label="状态筛选">
+                <option>全部状态</option>
+                <option>正常</option>
+                <option>停用</option>
+              </select>
+              <button class="btn btn-primary btn-sm">+ 新增用户</button>
+            </div>
+
             <div class="table-wrap">
               <table class="result">
                 <thead>
-                  <tr><th>用户名</th><th>姓名</th><th>角色</th><th>状态</th><th>最近登录</th></tr>
+                  <tr><th>用户名</th><th>姓名</th><th>部门</th><th>邮箱</th><th>角色</th><th>状态</th><th>最近登录</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>zhangwei</td><td>张伟</td><td>平台管理员</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-12 09:24</td></tr>
-                  <tr><td>lina</td><td>李娜</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-13 14:02</td></tr>
-                  <tr><td>wangfang</td><td>王芳</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-11 18:40</td></tr>
-                  <tr><td>chenjie</td><td>陈杰</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-10 11:15</td></tr>
-                  <tr><td>liuyang</td><td>刘洋</td><td>只读访客</td><td><span class="badge badge-pending">停用</span></td><td>2025-09-28 16:33</td></tr>
+                  <tr><td>zhangwei</td><td>张伟</td><td>总经办</td><td>zhangwei@teavision.cn</td><td>平台管理员</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-12 09:24</td></tr>
+                  <tr><td>sunli</td><td>孙丽</td><td>数据中台</td><td>sunli@teavision.cn</td><td>平台管理员</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-10 17:33</td></tr>
+                  <tr><td>lina</td><td>李娜</td><td>数据中台</td><td>lina@teavision.cn</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-13 14:02</td></tr>
+                  <tr><td>chenjie</td><td>陈杰</td><td>数据中台</td><td>chenjie@teavision.cn</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-10 11:15</td></tr>
+                  <tr><td>wuyifan</td><td>吴一凡</td><td>品牌营销部</td><td>wuyifan@teavision.cn</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-09 10:48</td></tr>
+                  <tr><td>zhoumin</td><td>周敏</td><td>电商运营部</td><td>zhoumin@teavision.cn</td><td>数据分析师</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-08 16:20</td></tr>
+                  <tr><td>zhaogang</td><td>赵刚</td><td>供应链中心</td><td>zhaogang@teavision.cn</td><td>数据分析师</td><td><span class="badge badge-pending">停用</span></td><td>2025-09-20 09:10</td></tr>
+                  <tr><td>wangfang</td><td>王芳</td><td>品牌营销部</td><td>wangfang@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-11 18:40</td></tr>
+                  <tr><td>huangxin</td><td>黄鑫</td><td>电商运营部</td><td>huangxin@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-07 12:55</td></tr>
+                  <tr><td>xujun</td><td>徐军</td><td>供应链中心</td><td>xujun@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-06 15:30</td></tr>
+                  <tr><td>zhengping</td><td>郑萍</td><td>品牌营销部</td><td>zhengping@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-05 08:40</td></tr>
+                  <tr><td>mayan</td><td>马艳</td><td>电商运营部</td><td>mayan@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-04 14:18</td></tr>
+                  <tr><td>songtao</td><td>宋涛</td><td>品牌营销部</td><td>songtao@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-03 11:22</td></tr>
+                  <tr><td>linna</td><td>林娜</td><td>财务部</td><td>linna@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-02 09:45</td></tr>
+                  <tr><td>hewei</td><td>何伟</td><td>电商运营部</td><td>hewei@teavision.cn</td><td>业务负责人</td><td><span class="badge badge-pending">停用</span></td><td>2025-09-15 08:25</td></tr>
+                  <tr><td>liuyang</td><td>刘洋</td><td>财务部</td><td>liuyang@teavision.cn</td><td>只读访客</td><td><span class="badge badge-pending">停用</span></td><td>2025-09-28 16:33</td></tr>
+                  <tr><td>xiebin</td><td>谢彬</td><td>供应链中心</td><td>xiebin@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-10-01 13:10</td></tr>
+                  <tr><td>gaoshan</td><td>高山</td><td>质量管理部</td><td>gaoshan@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-09-30 17:00</td></tr>
+                  <tr><td>tangwei</td><td>唐伟</td><td>财务部</td><td>tangwei@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-09-29 10:30</td></tr>
+                  <tr><td>hanmei</td><td>韩梅</td><td>品牌营销部</td><td>hanmei@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-09-27 16:45</td></tr>
+                  <tr><td>fenglei</td><td>冯磊</td><td>电商运营部</td><td>fenglei@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-09-26 14:20</td></tr>
+                  <tr><td>dongfang</td><td>董芳</td><td>质量管理部</td><td>dongfang@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-09-24 09:55</td></tr>
+                  <tr><td>yuqiang</td><td>于强</td><td>供应链中心</td><td>yuqiang@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-09-23 18:05</td></tr>
+                  <tr><td>jiangbo</td><td>江波</td><td>财务部</td><td>jiangbo@teavision.cn</td><td>只读访客</td><td><span class="badge badge-ok">正常</span></td><td>2025-09-22 11:40</td></tr>
+                  <tr><td>chuyan</td><td>楚燕</td><td>品牌营销部</td><td>chuyan@teavision.cn</td><td>只读访客</td><td><span class="badge badge-pending">停用</span></td><td>2025-09-10 15:15</td></tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="table-foot">
+              <span class="tf-info">显示 1-25 条，共 25 条</span>
+              <div class="pagination">
+                <button class="page-btn" disabled>上一页</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn" disabled>下一页</button>
+              </div>
             </div>
           </div>
         </section>
