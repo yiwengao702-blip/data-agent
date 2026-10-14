@@ -33,6 +33,14 @@ data/
 # ===== 前端依赖（如后续引入 Node 工具链） =====
 node_modules/
 
+# ===== 嵌入模型权重（体积大，禁止入库；用 docker/embedding/download_model.sh 拉取） =====
+docker/embedding/**/*.bin
+docker/embedding/**/*.safetensors
+docker/embedding/**/*.gguf
+docker/embedding/**/*.pt
+docker/embedding/**/*.pth
+docker/embedding/**/*.onnx
+
 # ===== 操作系统产物 =====
 .DS_Store
 Thumbs.db

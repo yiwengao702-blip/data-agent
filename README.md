@@ -38,7 +38,7 @@ data-agent/
 │   ├── docker-compose.yaml  # 一键启动 4 个依赖服务
 │   ├── mysql/               # 初始化 SQL（dw.sql / meta.sql）
 │   ├── elasticsearch/       # 带 IK 插件的 ES 镜像构建
-│   └── embedding/           # bge-large-zh-v1.5 模型文件
+│   └── embedding/           # bge-large-zh-v1.5（模型目录：配置/分词器入库，权重需脚本拉取）
 ├── conf/
 │   ├── app_config.yaml      # 全局配置（DB / Qdrant / ES / Embedding / LLM / 服务端口）
 │   └── meta_config.yaml     # 元知识库配置（要导入哪些表、字段、指标）
@@ -77,6 +77,13 @@ docker compose up -d
 ```
 
 会启动 mysql(3306) / elasticsearch(9200) / qdrant(6333) / embedding(8081)。
+
+> ⚠️ **嵌入模型权重不在仓库内**：`embedding` 服务（HF TEI）需要 `bge-large-zh-v1.5` 的权重文件 `pytorch_model.bin`（约 1.3GB），因体积过大已移出版本控制。首次部署前请先拉取权重：
+> ```bash
+> bash docker/embedding/download_model.sh
+> ```
+> 脚本会将其下载到 `docker/embedding/bge-large-zh-v1.5/`（该目录已加入 `.gitignore`，不会重新入库）。国内网络可先 `export HF_ENDPOINT=https://hf-mirror.com` 加速。若希望 TEI 启动时自动下载（无需本地挂载），可把 `docker-compose.yaml` 中 `embedding.MODEL_ID` 由本地路径改为 HF 仓库 id `BAAI/bge-large-zh-v1.5` 并去掉该服务的 `volumes` 挂载。
+
 MySQL 首次启动会按 `mysql/*.sql` 自动建 `dw`、`meta` 库并灌入演示维度数据。
 
 > 若本机 3306 端口已被其他项目占用，请先停掉冲突容器，或修改 `docker-compose.yaml` 中 mysql 的端口映射（同时改 `conf/app_config.yaml` 的 `db_meta/db_dw.port`）。
